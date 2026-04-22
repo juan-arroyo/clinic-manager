@@ -1,0 +1,53 @@
+# docker-compose.yml
+# Este archivo define y coordina todos los contenedores del proyecto.
+# Se ejecuta con: docker compose up
+
+services:
+
+  # --- BASE DE DATOS ---
+  db:
+    image: postgres:16               # usamos la imagen oficial de PostgreSQL versión 16
+    restart: unless-stopped          # se reinicia automáticamente si Docker se reinicia
+    env_file:
+      - .env                         # lee las credenciales de la BD desde el archivo .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # guarda los datos en un volumen persistente
+    ports:
+      - "5432:5432"                  # expone el puerto de PostgreSQL al host
+
+  # --- APLICACIÓN DJANGO ---
+  web:
+    build: ./backend                 # construye la imagen usando el Dockerfile de /backend
+    restart: unless-stopped
+    env_file:
+      - .env                         # Django también necesita las variables de entorno
+    volumes:
+      - ./backend:/app               # monta el código local en el contenedor
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    depends_on:
+      - db                           # espera a que la BD esté levantada antes de arrancar
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+      # en desarrollo: runserver con recarga automática
+      # en producción sustituiremos por gunicorn
+
+  # --- PROXY INVERSO ---
+  nginx:
+    image: nginx:alpine              # imagen oficial de Nginx, versión ligera
+    restart: unless-stopped
+    ports:
+      - "80:80"                      # expone el puerto 80 al exterior
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    depends_on:
+      - web                          # espera a que Django esté levantado
+
+# --- VOLÚMENES PERSISTENTES ---
+volumes:
+  postgres_data:    # datos de la base de datos
+  static_volume:    # archivos CSS/JS de Django
+  media_volume:     # facturas PDF y otros archivos subidos
