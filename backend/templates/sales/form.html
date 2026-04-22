@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} — Clínica Solaz{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+
+    <!-- Cabecera -->
+    <div class="mb-6">
+        <a href="{% url 'sales:list' %}" class="text-sm link-primary mb-1 block">
+            ← Volver a ventas
+        </a>
+        <h1 class="text-2xl font-bold">{{ title }}</h1>
+    </div>
+
+    <!-- Formulario -->
+    <div class="card bg-base-100 shadow">
+        <div class="card-body">
+
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- Facturación -->
+                <h2 class="font-semibold text-lg mb-4">Facturación</h2>
+                <div class="form-control mb-6">
+                    <label class="label cursor-pointer justify-start gap-3">
+                        {{ form.invoice_issued }}
+                        <span class="label-text">Factura emitida (genera número automáticamente)</span>
+                    </label>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Datos de la venta -->
+                <h2 class="font-semibold text-lg mb-4">Datos de la venta</h2>
+
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="form-control">
+                        <label class="label"><span class="label-text">Fecha *</span></label>
+                        {{ form.date }}
+                    </div>
+                    <div class="form-control">
+                        <label class="label"><span class="label-text">Importe (€) *</span></label>
+                        {{ form.amount }}
+                        {% if form.amount.errors %}
+                            <span class="text-error text-sm mt-1">{{ form.amount.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="form-control col-span-2">
+                        <label class="label"><span class="label-text">Paciente *</span></label>
+                        {{ form.patient }}
+                        {% if form.patient.errors %}
+                            <span class="text-error text-sm mt-1">{{ form.patient.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="form-control">
+                        <label class="label"><span class="label-text">Método de pago *</span></label>
+                        {{ form.payment_method }}
+                    </div>
+                    <div class="form-control">
+                        <label class="label"><span class="label-text">Trabajador *</span></label>
+                        {{ form.worker }}
+                    </div>
+                    <div class="form-control col-span-2">
+                        <label class="label"><span class="label-text">Tipo de tratamiento *</span></label>
+                        {{ form.treatment_type }}
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Bono -->
+                <h2 class="font-semibold text-lg mb-4">Bono</h2>
+                <div class="form-control mb-4">
+                    <label class="label cursor-pointer justify-start gap-3">
+                        {{ form.is_bonus }}
+                        <span class="label-text">Esta venta es de bono</span>
+                    </label>
+                </div>
+                <div class="form-control mb-4">
+                    <label class="label"><span class="label-text">Bono</span></label>
+                    {{ form.bonus }}
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Otros -->
+                <h2 class="font-semibold text-lg mb-4">Otros</h2>
+                <div class="form-control mb-4">
+                    <label class="label"><span class="label-text">Descripción</span></label>
+                    {{ form.description }}
+                </div>
+                <div class="form-control mb-6">
+                    <label class="label cursor-pointer justify-start gap-3">
+                        {{ form.is_paid }}
+                        <span class="label-text">Pagado</span>
+                    </label>
+                </div>
+
+                <!-- Botones -->
+                <div class="flex gap-3">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    {% if sale %}
+                        <a href="{% url 'sales:detail' sale.pk %}" class="btn btn-outline">Cancelar</a>
+                    {% else %}
+                        <a href="{% url 'sales:list' %}" class="btn btn-outline">Cancelar</a>
+                    {% endif %}
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

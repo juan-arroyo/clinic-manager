@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}Venta {{ sale.date }} — Clínica Solaz{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+
+    <!-- Cabecera -->
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <a href="{% url 'sales:list' %}" class="text-sm link-primary mb-1 block">
+                ← Volver a ventas
+            </a>
+            <h1 class="text-2xl font-bold">
+                Venta del {{ sale.date|date:"d/m/Y" }}
+            </h1>
+        </div>
+        <a href="{% url 'sales:edit' sale.pk %}" class="btn btn-primary btn-sm">
+            Editar
+        </a>
+    </div>
+
+    <!-- Ficha de la venta -->
+    <div class="card bg-base-100 shadow">
+        <div class="card-body">
+
+            <!-- Facturación -->
+            <h2 class="card-title text-lg mb-4">Facturación</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <p class="text-sm text-base-content/50">Factura emitida</p>
+                    {% if sale.invoice_issued %}
+                        <span class="badge badge-success">Sí</span>
+                    {% else %}
+                        <span class="badge badge-ghost">No</span>
+                    {% endif %}
+                </div>
+                <div>
+                    <p class="text-sm text-base-content/50">Número de factura</p>
+                    <p class="font-medium">{{ sale.invoice_number|default:"—" }}</p>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Datos de la venta -->
+            <h2 class="card-title text-lg mb-4">Datos de la venta</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <p class="text-sm text-base-content/50">Fecha</p>
+                    <p class="font-medium">{{ sale.date|date:"d/m/Y" }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-base-content/50">Paciente</p>
+                    <a href="{% url 'patients:detail' sale.patient.pk %}" class="font-medium link-primary">
+                        {{ sale.patient.full_name }}
+                    </a>
+                </div>
+                <div>
+                    <p class="text-sm text-base-content/50">Importe</p>
+                    <p class="font-medium text-lg">{{ sale.amount }}€</p>
+                </div>
+                <div>
+                    <p class="text-sm text-base-content/50">Método de pago</p>
+                    <p class="font-medium">{{ sale.get_payment_method_display }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-base-content/50">Tipo de tratamiento</p>
+                    <p class="font-medium">{{ sale.get_treatment_type_display }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-base-content/50">Trabajador</p>
+                    <!-- Círculo con el color del fisioterapeuta -->
+                    <div class="flex items-center gap-2">
+                        <div
+                            class="w-4 h-4 rounded-full"
+                            style="background-color: {{ sale.worker.color }}"
+                        ></div>
+                        <p class="font-medium">{{ sale.worker.get_full_name }}</p>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-sm text-base-content/50">Es de bono</p>
+                    {% if sale.is_bonus %}
+                        <span class="badge badge-info">Sí — {{ sale.bonus.bonus_number }}</span>
+                    {% else %}
+                        <span class="badge badge-ghost">No</span>
+                    {% endif %}
+                </div>
+                <div>
+                    <p class="text-sm text-base-content/50">Pagado</p>
+                    {% if sale.is_paid %}
+                        <span class="badge badge-success">Sí</span>
+                    {% else %}
+                        <span class="badge badge-error">No</span>
+                    {% endif %}
+                </div>
+                {% if sale.description %}
+                <div class="col-span-2">
+                    <p class="text-sm text-base-content/50">Descripción</p>
+                    <p class="font-medium">{{ sale.description }}</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Cálculo fisioterapeuta -->
+            <h2 class="card-title text-lg mb-4">Liquidación</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <p class="text-sm text-base-content/50">Importe clínica</p>
+                    <p class="font-medium text-lg">{{ sale.amount }}€</p>
+                </div>
+                <div>
+                    <p class="text-sm text-base-content/50">Importe fisioterapeuta</p>
+                    <p class="font-medium text-lg">{{ sale.fisio_amount }}€</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

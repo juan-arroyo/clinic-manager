@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}Ventas — Clínica Solaz{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+
+    <!-- Cabecera -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold">Ventas</h1>
+        <a href="{% url 'sales:create' %}" class="btn btn-primary btn-sm">
+            + Nueva venta
+        </a>
+    </div>
+
+    <!-- Buscador -->
+    <form method="get" class="mb-6">
+        <div class="flex gap-2">
+            <input
+                type="text"
+                name="q"
+                value="{{ query }}"
+                placeholder="Buscar por paciente, factura o descripción..."
+                class="input input-bordered flex-1"
+            />
+            <button type="submit" class="btn btn-primary">Buscar</button>
+            {% if query %}
+                <a href="{% url 'sales:list' %}" class="btn btn-outline">Limpiar</a>
+            {% endif %}
+        </div>
+    </form>
+
+    <!-- Tabla de ventas -->
+    <div class="card bg-base-100 shadow">
+        <div class="card-body p-0">
+            <table class="table table-zebra table-sm">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Paciente</th>
+                        <th>Importe</th>
+                        <th>Tipo</th>
+                        <th>Trabajador</th>
+                        <th>Pago</th>
+                        <th>Factura</th>
+                        <th>Pagado</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sale in sales %}
+                    <tr>
+                        <td>{{ sale.date|date:"d/m/Y" }}</td>
+                        <td>
+                            <a href="{% url 'patients:detail' sale.patient.pk %}" class="link-primary">
+                                {{ sale.patient.full_name }}
+                            </a>
+                        </td>
+                        <td class="font-medium">{{ sale.amount }}€</td>
+                        <td>{{ sale.get_treatment_type_display }}</td>
+                        <td>{{ sale.worker.first_name }}</td>
+                        <td>{{ sale.get_payment_method_display }}</td>
+                        <td>
+                            {% if sale.invoice_issued %}
+                                <span class="text-sm">{{ sale.invoice_number }}</span>
+                            {% else %}
+                                <span class="text-base-content/30">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if sale.is_paid %}
+                                <span class="badge badge-success badge-sm">Sí</span>
+                            {% else %}
+                                <span class="badge badge-error badge-sm">No</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'sales:detail' sale.pk %}" class="btn btn-ghost btn-xs">Ver</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="text-center py-8 text-base-content/50">
+                            {% if query %}
+                                No se encontraron ventas con "{{ query }}"
+                            {% else %}
+                                No hay ventas registradas todavía.
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Contador -->
+    <p class="text-sm text-base-content/50 mt-3">
+        {{ sales|length }} venta{{ sales|length|pluralize }} encontrada{{ sales|length|pluralize }}
+    </p>
+
+</div>
+{% endblock %}
