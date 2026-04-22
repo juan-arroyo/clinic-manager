@@ -18,4 +18,11 @@ urlpatterns = [
 
     # Editar venta existente
     path('<int:pk>/editar/', views.sale_edit, name='edit'),
+
+
+    # Endpoint HTMX — devuelve los bonos activos de un paciente
+    # Se llama automáticamente cuando el usuario cambia el paciente en el formulario
+    path('bonos-paciente/', views.get_patient_bonuses, name='patient_bonuses'),
+
+    
 ]

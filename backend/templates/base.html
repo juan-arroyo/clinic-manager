@@ -37,9 +37,9 @@
 
         <!-- Menú de navegación -->
         <div class="flex gap-6 text-sm">
-            <a href="/pacientes/" class="hover:underline" style="color: #404040;">Pacientes</a>
-            <a href="#" class="hover:underline" style="color: #404040;">Bonos</a>
-            <a href="#" class="hover:underline" style="color: #404040;">Ventas</a>
+            <a href="{% url 'patients:list' %}" class="hover:underline" style="color: #404040;">Pacientes</a>
+            <a href="{% url 'bonuses:list' %}" class="hover:underline" style="color: #404040;">Bonos</a>
+            <a href="{% url 'sales:list' %}" class="hover:underline" style="color: #404040;">Ventas</a>
             <a href="#" class="hover:underline" style="color: #404040;">Reportes</a>
         </div>
 
@@ -64,6 +64,11 @@
     <main class="p-8">
         {% block content %}{% endblock %}
     </main>
+
+    <!-- HTMX — permite actualizar partes de la página sin recargar -->
+    <!-- hx-boost convierte los enlaces normales en peticiones HTMX automáticamente -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
 
     <!-- Bloque para JS extra que cada página pueda necesitar -->
     {% block extra_js %}{% endblock %}

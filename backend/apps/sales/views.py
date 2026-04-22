@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q  # Q permite búsquedas complejas con OR
 from .models import Sale
 from .forms import SaleForm
-
+from apps.bonuses.models import Bonus
 
 @login_required
 def sale_list(request):
@@ -79,4 +79,30 @@ def sale_edit(request, pk):
         'form': form,
         'title': f'Editar venta — {sale.date}',
         'sale': sale,  # lo pasamos para el botón de cancelar
+    })
+
+
+@login_required
+def get_patient_bonuses(request):
+    """
+    Vista llamada por HTMX cuando el usuario selecciona un paciente.
+    Devuelve solo el HTML del desplegable de bonos actualizado.
+    """
+    # HTMX envía el valor del select con el nombre del campo
+    # puede venir como 'patient' o 'patient_id' dependiendo del atributo hx-include
+    patient_id = request.GET.get('patient', '') or request.GET.get('patient_id', '')
+
+    if patient_id:
+        # Filtramos los bonos activos del paciente seleccionado
+        bonuses = Bonus.objects.filter(
+            patient_id=patient_id,
+            is_active=True
+        )
+    else:
+        # Si no hay paciente, no mostramos bonos
+        bonuses = Bonus.objects.none()
+
+    # Renderizamos solo el fragmento del desplegable
+    return render(request, 'sales/partials/bonus_select.html', {
+        'bonuses': bonuses
     })

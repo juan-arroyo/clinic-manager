@@ -1,0 +1,15 @@
+<!-- sales/partials/bonus_select.html -->
+<!-- Este archivo NO es una página completa — es solo un fragmento HTML.
+     HTMX lo inserta dentro del formulario cuando el usuario cambia el paciente.
+     Por eso no tiene DOCTYPE, html, head ni body. -->
+
+<select name="bonus" class="select select-bordered w-full">
+    <option value="">— Sin bono —</option>
+    {% for bonus in bonuses %}
+        <option value="{{ bonus.pk }}">
+            {{ bonus.bonus_number }} — {{ bonus.get_bonus_type_display }} ({{ bonus.sessions_remaining }} restantes)
+        </option>
+    {% empty %}
+        <option value="" disabled>Este paciente no tiene bonos activos</option>
+    {% endfor %}
+</select>

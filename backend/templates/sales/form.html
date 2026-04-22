@@ -48,7 +48,27 @@
                     </div>
                     <div class="form-control col-span-2">
                         <label class="label"><span class="label-text">Paciente *</span></label>
-                        {{ form.patient }}
+                        <!-- hx-get: cuando cambia este select, llama a la URL de bonos -->
+                        <!-- hx-target: reemplaza el contenido del div bonus-container -->
+                        <!-- hx-include: incluye el valor de este select en la petición -->
+                        <select
+                            name="patient"
+                            id="id_patient"
+                            class="select select-bordered w-full"
+                            hx-get="{% url 'sales:patient_bonuses' %}"
+                            hx-trigger="change"
+                            hx-target="#bonus-container"
+                            hx-include="this"
+                            required
+                        >
+                            <option value="">---------</option>
+                            {% for patient in form.patient.field.queryset %}
+                                <option value="{{ patient.pk }}"
+                                    {% if form.patient.value == patient.pk|stringformat:"s" %}selected{% endif %}>
+                                    {{ patient }}
+                                </option>
+                            {% endfor %}
+                        </select>
                         {% if form.patient.errors %}
                             <span class="text-error text-sm mt-1">{{ form.patient.errors.0 }}</span>
                         {% endif %}
@@ -71,15 +91,34 @@
 
                 <!-- Bono -->
                 <h2 class="font-semibold text-lg mb-4">Bono</h2>
+
+                <!-- Checkbox para indicar si es una venta de bono -->
                 <div class="form-control mb-4">
                     <label class="label cursor-pointer justify-start gap-3">
                         {{ form.is_bonus }}
                         <span class="label-text">Esta venta es de bono</span>
                     </label>
                 </div>
+
+                <!-- Desplegable de bonos actualizado por HTMX -->
+                <!-- hx-get: URL que HTMX llama cuando cambia el paciente -->
+                <!-- hx-trigger: se dispara cuando cambia el select de paciente -->
+                <!-- hx-target: el div donde HTMX inserta el resultado -->
+                <!-- hx-include: incluye el valor del select de paciente en la petición -->
                 <div class="form-control mb-4">
                     <label class="label"><span class="label-text">Bono</span></label>
-                    {{ form.bonus }}
+                    <div
+                        id="bonus-container"
+                        hx-get="{% url 'sales:patient_bonuses' %}"
+                        hx-trigger="change from:#id_patient"
+                        hx-target="#bonus-container"
+                        hx-include="#id_patient"
+                    >
+                        <!-- Select inicial — se reemplaza cuando se selecciona un paciente -->
+                        <select name="bonus" class="select select-bordered w-full">
+                            <option value="">— Selecciona primero un paciente —</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="divider"></div>
