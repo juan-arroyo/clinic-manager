@@ -8,11 +8,12 @@ from .base import *  # importamos toda la configuración base
 DEBUG = True
 
 # En desarrollo aceptamos peticiones desde localhost y la red local
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '192.168.1.108']
 
 # Dominios de confianza para CSRF — importante cuando usamos Docker + Nginx
 # (lección aprendida del proyecto anterior)
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost',
     'http://127.0.0.1',
+    'http://192.168.1.108',
 ]

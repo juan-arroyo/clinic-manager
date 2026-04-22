@@ -38,7 +38,7 @@ services:
     image: nginx:alpine              # imagen oficial de Nginx, versión ligera
     restart: unless-stopped
     ports:
-      - "80:80"                      # expone el puerto 80 al exterior
+      - "8083:80"                      # expone el puerto 80 al exterior
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
       - static_volume:/app/staticfiles
