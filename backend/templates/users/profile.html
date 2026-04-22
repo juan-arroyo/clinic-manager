@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clínica Solaz — Mi perfil</title>
+    <!-- DaisyUI y Tailwind via CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configuramos Tailwind para que reconozca nuestro tema personalizado
+        tailwind.config = {
+            daisyui: {
+                themes: [
+                    {
+                        solaz: {
+                            "primary": "#2596be",
+                            "primary-content": "#ffffff",
+                            "secondary": "#a8c8e8",
+                            "secondary-content": "#404040",
+                            "accent": "#2596be",
+                            "base-100": "#ffffff",
+                            "base-200": "#f0f6fa",
+                            "base-300": "#d2e6f2",
+                            "base-content": "#404040",
+                            "info": "#2596be",
+                            "success": "#22c55e",
+                            "warning": "#eab308",
+                            "error": "#ef4444",
+                        }
+                    }
+                ]
+            }
+        }
+    </script>
+</head>
+<body data-theme="solaz" class="min-h-screen bg-base-200 flex items-center justify-center">
+
+    <div class="max-w-xl mx-auto">
+
+        <!-- Cabecera -->
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold">Mi perfil</h1>
+            <!-- Botón para cerrar sesión -->
+            <a href="{% url 'users:logout' %}" class="btn btn-outline btn-sm">
+                Cerrar sesión
+            </a>
+        </div>
+
+        <!-- Tarjeta de perfil -->
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+
+                <!-- Color identificativo -->
+                <div class="flex items-center gap-4 mb-4">
+                    <!-- Círculo con el color del fisioterapeuta -->
+                    <div
+                        class="w-12 h-12 rounded-full border-2 border-base-300"
+                        style="background-color: {{ request.user.color }}"
+                    ></div>
+                    <div>
+                        <p class="font-semibold text-lg">
+                            {{ request.user.first_name }} {{ request.user.last_name }}
+                        </p>
+                        <!-- Mostramos el rol de forma legible -->
+                        <p class="text-base-content/60 text-sm">
+                            {{ request.user.get_role_display }}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Datos del usuario -->
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <span class="text-base-content/60">Email</span>
+                        <span>{{ request.user.email }}</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

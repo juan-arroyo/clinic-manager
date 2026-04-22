@@ -1,0 +1,36 @@
+/* backend/static/css/theme.css */
+/* Tema personalizado de Clínica Solaz para DaisyUI.
+   Definimos aquí los colores de la marca una sola vez.
+   En las templates usaremos clases como btn-primary, text-primary, etc. */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+[data-theme="solaz"] {
+    /* Color principal — azul del logo */
+    --color-primary: 37 150 190;          /* #2596be */
+    --color-primary-content: 255 255 255; /* texto blanco sobre azul */
+
+    /* Color secundario — azul claro del logo */
+    --color-secondary: 168 200 232;       /* #a8c8e8 */
+    --color-secondary-content: 64 64 64;  /* texto gris oscuro sobre azul claro */
+
+    /* Color de acento — podemos usarlo para detalles */
+    --color-accent: 37 150 190;           /* mismo azul principal */
+    --color-accent-content: 255 255 255;
+
+    /* Fondo de la página */
+    --color-base-100: 255 255 255;        /* blanco */
+    --color-base-200: 240 246 250;        /* azul muy muy claro */
+    --color-base-300: 210 230 242;        /* azul claro para bordes */
+
+    /* Color del texto principal */
+    --color-base-content: 64 64 64;       /* #404040 gris oscuro */
+
+    /* Colores de estado */
+    --color-info: 37 150 190;
+    --color-success: 34 197 94;
+    --color-warning: 234 179 8;
+    --color-error: 239 68 68;
+}

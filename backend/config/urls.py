@@ -11,6 +11,9 @@ urlpatterns = [
     # Panel de administración de Django (con Unfold)
     path('admin/', admin.site.urls),
 
+    # URLs del módulo de usuarios (login, logout, perfil)
+    path('', include('apps.users.urls')),
+
     # Aquí iremos añadiendo las URLs de cada app en fases posteriores
     # path('', include('apps.users.urls')),
     # path('pacientes/', include('apps.patients.urls')),

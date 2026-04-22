@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clínica Solaz — Iniciar sesión</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Tema personalizado Clínica Solaz */
+        :root {
+            --color-primary: #2596be;
+            --color-primary-content: #ffffff;
+            --color-secondary: #a8c8e8;
+            --color-base-100: #ffffff;
+            --color-base-200: #f0f6fa;
+            --color-base-content: #404040;
+        }
+        .btn-primary {
+            background-color: #2596be !important;
+            border-color: #2596be !important;
+            color: #ffffff !important;
+        }
+        .btn-primary:hover {
+            background-color: #1a7a9e !important;
+            border-color: #1a7a9e !important;
+        }
+        body {
+            background-color: #f0f6fa;
+            color: #404040;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-base-200 flex items-center justify-center">
+
+    <div class="card w-full max-w-sm shadow-xl bg-base-100">
+        <div class="card-body">
+
+            <!-- Título -->
+            <h1 class="text-2xl font-bold text-center mb-2">Clínica Solaz</h1>
+            <p class="text-center text-base-content/60 mb-4">Inicia sesión para continuar</p>
+
+            <!-- Mensajes de error -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-error mb-4">
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Formulario de login -->
+            <!-- method="post" envía los datos de forma segura -->
+            <!-- {% csrf_token %} es obligatorio en todos los formularios Django — protege contra ataques -->
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- Campo email -->
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text">Email</span>
+                    </label>
+                    <input
+                        type="email"
+                        name="email"
+                        class="input input-bordered w-full"
+                        placeholder="tu@email.com"
+                        required
+                        autofocus
+                    />
+                </div>
+
+                <!-- Campo contraseña -->
+                <div class="form-control mb-6">
+                    <label class="label">
+                        <span class="label-text">Contraseña</span>
+                    </label>
+                    <input
+                        type="password"
+                        name="password"
+                        class="input input-bordered w-full"
+                        placeholder="••••••••"
+                        required
+                    />
+                </div>
+
+                <!-- Botón de envío -->
+                <button type="submit" class="btn btn-primary w-full">
+                    Iniciar sesión
+                </button>
+
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
