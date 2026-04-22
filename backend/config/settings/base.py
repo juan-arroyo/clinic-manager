@@ -31,11 +31,11 @@ INSTALLED_APPS = [
     'django_htmx',
 
     # Nuestras apps (las crearemos en fases posteriores)
-    #'apps.users',
-    #'apps.patients',
-    #'apps.bonuses',
-    #'apps.sales',
-    #'apps.reports',
+    'apps.users',
+    'apps.patients',
+    'apps.bonuses',
+    'apps.sales',
+    'apps.reports',
 ]
 
 # --- MIDDLEWARE ---
@@ -88,7 +88,7 @@ DATABASES = {
 
 # --- MODELO DE USUARIO PERSONALIZADO ---
 # Debe definirse ANTES de la primera migración (lección aprendida)
-#AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = 'users.User'
 
 # --- CONTRASEÑAS ---
 AUTH_PASSWORD_VALIDATORS = [
