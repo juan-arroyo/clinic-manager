@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} — Clínica Solaz{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto">
+
+    <!-- Cabecera -->
+    <div class="mb-6">
+        <a href="{% url 'bonuses:list' %}" class="text-sm link-primary mb-1 block">
+            ← Volver a bonos
+        </a>
+        <h1 class="text-2xl font-bold">{{ title }}</h1>
+    </div>
+
+    <!-- Formulario -->
+    <div class="card bg-base-100 shadow">
+        <div class="card-body">
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="form-control mb-4">
+                    <label class="label"><span class="label-text">Paciente *</span></label>
+                    {{ form.patient }}
+                    {% if form.patient.errors %}
+                        <span class="text-error text-sm mt-1">{{ form.patient.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-control mb-6">
+                    <label class="label"><span class="label-text">Tipo de bono *</span></label>
+                    {{ form.bonus_type }}
+                    {% if form.bonus_type.errors %}
+                        <span class="text-error text-sm mt-1">{{ form.bonus_type.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="flex gap-3">
+                    <button type="submit" class="btn btn-primary">Crear bono</button>
+                    <a href="{% url 'bonuses:list' %}" class="btn btn-outline">Cancelar</a>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Bonos — Clínica Solaz{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto">
+
+    <!-- Cabecera -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold">Bonos</h1>
+        <a href="{% url 'bonuses:create' %}" class="btn btn-primary btn-sm">
+            + Nuevo bono
+        </a>
+    </div>
+
+    <!-- Buscador -->
+    <form method="get" class="mb-6">
+        <div class="flex gap-2">
+            <input
+                type="text"
+                name="q"
+                value="{{ query }}"
+                placeholder="Buscar por número de bono o paciente..."
+                class="input input-bordered flex-1"
+            />
+            <button type="submit" class="btn btn-primary">Buscar</button>
+            {% if query %}
+                <a href="{% url 'bonuses:list' %}" class="btn btn-outline">Limpiar</a>
+            {% endif %}
+        </div>
+    </form>
+
+    <!-- Tabla de bonos -->
+    <div class="card bg-base-100 shadow">
+        <div class="card-body p-0">
+            <table class="table table-zebra">
+                <thead>
+                    <tr>
+                        <th>Nº Bono</th>
+                        <th>Paciente</th>
+                        <th>Tipo</th>
+                        <th>Sesiones usadas</th>
+                        <th>Sesiones restantes</th>
+                        <th>Estado</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bonus in bonuses %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'bonuses:detail' bonus.pk %}" class="font-medium link-primary">
+                                {{ bonus.bonus_number }}
+                            </a>
+                        </td>
+                        <td>{{ bonus.patient }}</td>
+                        <td>{{ bonus.get_bonus_type_display }}</td>
+                        <td>{{ bonus.sessions_used }}</td>
+                        <td>{{ bonus.sessions_remaining }}</td>
+                        <td>
+                            {% if bonus.is_active %}
+                                <span class="badge badge-success">Activo</span>
+                            {% else %}
+                                <span class="badge badge-error">Agotado</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ bonus.created_at|date:"d/m/Y" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-8 text-base-content/50">
+                            {% if query %}
+                                No se encontraron bonos con "{{ query }}"
+                            {% else %}
+                                No hay bonos registrados todavía.
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <p class="text-sm text-base-content/50 mt-3">
+        {{ bonuses|length }} bono{{ bonuses|length|pluralize }} encontrado{{ bonuses|length|pluralize }}
+    </p>
+
+</div>
+{% endblock %}

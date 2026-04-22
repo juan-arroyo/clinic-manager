@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ bonus.bonus_number }} — Clínica Solaz{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+
+    <!-- Cabecera -->
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <a href="{% url 'bonuses:list' %}" class="text-sm link-primary mb-1 block">
+                ← Volver a bonos
+            </a>
+            <h1 class="text-2xl font-bold">{{ bonus.bonus_number }}</h1>
+        </div>
+        {% if bonus.is_active %}
+            <span class="badge badge-success badge-lg">Activo</span>
+        {% else %}
+            <span class="badge badge-error badge-lg">Agotado</span>
+        {% endif %}
+    </div>
+
+    <!-- Ficha del bono -->
+    <div class="card bg-base-100 shadow">
+        <div class="card-body">
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <p class="text-sm text-base-content/50">Paciente</p>
+                    <a href="{% url 'patients:detail' bonus.patient.pk %}" class="font-medium link-primary">
+                        {{ bonus.patient.full_name }}
+                    </a>
+                </div>
+                <div>
+                    <p class="text-sm text-base-content/50">Tipo de bono</p>
+                    <p class="font-medium">{{ bonus.get_bonus_type_display }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-base-content/50">Sesiones consumidas</p>
+                    <p class="font-medium">{{ bonus.sessions_used }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-base-content/50">Sesiones restantes</p>
+                    <p class="font-medium">{{ bonus.sessions_remaining }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-base-content/50">Fecha de creación</p>
+                    <p class="font-medium">{{ bonus.created_at|date:"d/m/Y" }}</p>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Barra de progreso de sesiones -->
+            <div>
+                <p class="text-sm text-base-content/50 mb-2">
+                    Progreso — {{ bonus.sessions_used }} de {{ bonus.bonus_type }} sesiones
+                </p>
+                <progress
+                    class="progress progress-primary w-full"
+                    value="{{ bonus.sessions_used }}"
+                    max="{{ bonus.bonus_type }}"
+                ></progress>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -17,6 +17,9 @@ urlpatterns = [
     # URLs del módulo de pacientes
     path('pacientes/', include('apps.patients.urls')),
 
+    # URLs del módulo de bonos
+    path('bonos/', include('apps.bonuses.urls')),
+
     # Aquí iremos añadiendo las URLs de cada app en fases posteriores
     # path('', include('apps.users.urls')),
     # path('pacientes/', include('apps.patients.urls')),
