@@ -1,126 +1,107 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clínica Solaz — {{ title }}</title>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .btn-primary { background-color: #2596be !important; border-color: #2596be !important; color: #ffffff !important; }
-        .btn-primary:hover { background-color: #1a7a9e !important; border-color: #1a7a9e !important; }
-        body { background-color: #f0f6fa; color: #404040; }
-    </style>
-</head>
-<body class="min-h-screen p-8">
+{% extends 'base.html' %}
 
-    <div class="max-w-2xl mx-auto">
+{% block title %}{{ title }} — Clínica Solaz{% endblock %}
 
-        <!-- Cabecera -->
-        <div class="mb-6">
-            <a href="{% url 'patients:list' %}" class="text-sm hover:underline mb-1 block" style="color: #2596be;">
-                ← Volver a pacientes
-            </a>
-            <h1 class="text-2xl font-bold">{{ title }}</h1>
-        </div>
+{% block content %}
+<div class="max-w-2xl mx-auto">
 
-        <!-- Formulario -->
-        <div class="card bg-base-100 shadow">
-            <div class="card-body">
-
-                <form method="post">
-                    {% csrf_token %}
-
-                    <!-- Datos personales -->
-                    <h2 class="font-semibold text-lg mb-4">Datos personales</h2>
-
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div class="form-control">
-                            <label class="label"><span class="label-text">DNI *</span></label>
-                            {{ form.dni }}
-                            {% if form.dni.errors %}
-                                <span class="text-error text-sm mt-1">{{ form.dni.errors.0 }}</span>
-                            {% endif %}
-                        </div>
-                        <div class="form-control">
-                            <label class="label"><span class="label-text">Fecha de nacimiento</span></label>
-                            {{ form.birth_date }}
-                        </div>
-                        <div class="form-control">
-                            <label class="label"><span class="label-text">Nombre *</span></label>
-                            {{ form.first_name }}
-                            {% if form.first_name.errors %}
-                                <span class="text-error text-sm mt-1">{{ form.first_name.errors.0 }}</span>
-                            {% endif %}
-                        </div>
-                        <div class="form-control">
-                            <label class="label"><span class="label-text">Apellidos *</span></label>
-                            {{ form.last_name }}
-                            {% if form.last_name.errors %}
-                                <span class="text-error text-sm mt-1">{{ form.last_name.errors.0 }}</span>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="divider"></div>
-
-                    <!-- Contacto -->
-                    <h2 class="font-semibold text-lg mb-4">Contacto</h2>
-
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div class="form-control">
-                            <label class="label"><span class="label-text">Teléfono</span></label>
-                            {{ form.phone }}
-                        </div>
-                        <div class="form-control">
-                            <label class="label"><span class="label-text">Email</span></label>
-                            {{ form.email }}
-                        </div>
-                        <div class="form-control col-span-2">
-                            <label class="label"><span class="label-text">Domicilio</span></label>
-                            {{ form.address }}
-                        </div>
-                    </div>
-
-                    <div class="divider"></div>
-
-                    <!-- Datos clínicos -->
-                    <h2 class="font-semibold text-lg mb-4">Datos clínicos</h2>
-
-                    <div class="form-control mb-4">
-                        <label class="label"><span class="label-text">Observaciones</span></label>
-                        {{ form.notes }}
-                    </div>
-
-                    <div class="form-control mb-6">
-                        <label class="label cursor-pointer justify-start gap-3">
-                            {{ form.is_active }}
-                            <span class="label-text">Paciente activo</span>
-                        </label>
-                    </div>
-
-                    <!-- Botones -->
-                    <div class="flex gap-3">
-                        <button type="submit" class="btn btn-primary">
-                            Guardar
-                        </button>
-                        {% if patient %}
-                            <a href="{% url 'patients:detail' patient.pk %}" class="btn btn-outline">
-                                Cancelar
-                            </a>
-                        {% else %}
-                            <a href="{% url 'patients:list' %}" class="btn btn-outline">
-                                Cancelar
-                            </a>
-                        {% endif %}
-                    </div>
-
-                </form>
-
-            </div>
-        </div>
-
+    <!-- Cabecera -->
+    <div class="mb-6">
+        <a href="{% url 'patients:list' %}" class="text-sm link-primary mb-1 block">
+            ← Volver a pacientes
+        </a>
+        <h1 class="text-2xl font-bold">{{ title }}</h1>
     </div>
 
-</body>
-</html>
+    <!-- Formulario -->
+    <div class="card bg-base-100 shadow">
+        <div class="card-body">
+
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- Datos personales -->
+                <h2 class="font-semibold text-lg mb-4">Datos personales</h2>
+
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="form-control">
+                        <label class="label"><span class="label-text">DNI *</span></label>
+                        {{ form.dni }}
+                        {% if form.dni.errors %}
+                            <span class="text-error text-sm mt-1">{{ form.dni.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="form-control">
+                        <label class="label"><span class="label-text">Fecha de nacimiento</span></label>
+                        {{ form.birth_date }}
+                    </div>
+                    <div class="form-control">
+                        <label class="label"><span class="label-text">Nombre *</span></label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}
+                            <span class="text-error text-sm mt-1">{{ form.first_name.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="form-control">
+                        <label class="label"><span class="label-text">Apellidos *</span></label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}
+                            <span class="text-error text-sm mt-1">{{ form.last_name.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Contacto -->
+                <h2 class="font-semibold text-lg mb-4">Contacto</h2>
+
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="form-control">
+                        <label class="label"><span class="label-text">Teléfono</span></label>
+                        {{ form.phone }}
+                    </div>
+                    <div class="form-control">
+                        <label class="label"><span class="label-text">Email</span></label>
+                        {{ form.email }}
+                    </div>
+                    <div class="form-control col-span-2">
+                        <label class="label"><span class="label-text">Domicilio</span></label>
+                        {{ form.address }}
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Datos clínicos -->
+                <h2 class="font-semibold text-lg mb-4">Datos clínicos</h2>
+
+                <div class="form-control mb-4">
+                    <label class="label"><span class="label-text">Observaciones</span></label>
+                    {{ form.notes }}
+                </div>
+
+                <div class="form-control mb-6">
+                    <label class="label cursor-pointer justify-start gap-3">
+                        {{ form.is_active }}
+                        <span class="label-text">Paciente activo</span>
+                    </label>
+                </div>
+
+                <!-- Botones -->
+                <div class="flex gap-3">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    {% if patient %}
+                        <a href="{% url 'patients:detail' patient.pk %}" class="btn btn-outline">Cancelar</a>
+                    {% else %}
+                        <a href="{% url 'patients:list' %}" class="btn btn-outline">Cancelar</a>
+                    {% endif %}
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

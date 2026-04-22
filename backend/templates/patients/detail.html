@@ -1,90 +1,77 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clínica Solaz — {{ patient.full_name }}</title>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .btn-primary { background-color: #2596be !important; border-color: #2596be !important; color: #ffffff !important; }
-        .btn-primary:hover { background-color: #1a7a9e !important; border-color: #1a7a9e !important; }
-        body { background-color: #f0f6fa; color: #404040; }
-    </style>
-</head>
-<body class="min-h-screen p-8">
+{% extends 'base.html' %}
 
-    <div class="max-w-2xl mx-auto">
+{% block title %}{{ patient.full_name }} — Clínica Solaz{% endblock %}
 
-        <!-- Cabecera -->
-        <div class="flex justify-between items-center mb-6">
-            <div>
-                <a href="{% url 'patients:list' %}" class="text-sm hover:underline mb-1 block" style="color: #2596be;">
-                    ← Volver a pacientes
-                </a>
-                <h1 class="text-2xl font-bold">{{ patient.full_name }}</h1>
-            </div>
-            <a href="{% url 'patients:edit' patient.pk %}" class="btn btn-primary btn-sm">
-                Editar
+{% block content %}
+<div class="max-w-2xl mx-auto">
+
+    <!-- Cabecera -->
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <a href="{% url 'patients:list' %}" class="text-sm link-primary mb-1 block">
+                ← Volver a pacientes
             </a>
+            <h1 class="text-2xl font-bold">{{ patient.full_name }}</h1>
         </div>
-
-        <!-- Ficha del paciente -->
-        <div class="card bg-base-100 shadow">
-            <div class="card-body">
-
-                <h2 class="card-title text-lg mb-4">Datos personales</h2>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <p class="text-sm text-base-content/50">DNI</p>
-                        <p class="font-medium">{{ patient.dni }}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-base-content/50">Fecha de nacimiento</p>
-                        <p class="font-medium">{{ patient.birth_date|date:"d/m/Y"|default:"—" }}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-base-content/50">Teléfono</p>
-                        <p class="font-medium">{{ patient.phone|default:"—" }}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-base-content/50">Email</p>
-                        <p class="font-medium">{{ patient.email|default:"—" }}</p>
-                    </div>
-                    <div class="col-span-2">
-                        <p class="text-sm text-base-content/50">Domicilio</p>
-                        <p class="font-medium">{{ patient.address|default:"—" }}</p>
-                    </div>
-                </div>
-
-                <div class="divider"></div>
-
-                <h2 class="card-title text-lg mb-4">Datos clínicos</h2>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <p class="text-sm text-base-content/50">Fecha de alta</p>
-                        <p class="font-medium">{{ patient.registration_date|date:"d/m/Y" }}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-base-content/50">Estado</p>
-                        {% if patient.is_active %}
-                            <span class="badge badge-success">Activo</span>
-                        {% else %}
-                            <span class="badge badge-error">Inactivo</span>
-                        {% endif %}
-                    </div>
-                    <div class="col-span-2">
-                        <p class="text-sm text-base-content/50">Observaciones</p>
-                        <p class="font-medium">{{ patient.notes|default:"—" }}</p>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
+        <a href="{% url 'patients:edit' patient.pk %}" class="btn btn-primary btn-sm">
+            Editar
+        </a>
     </div>
 
-</body>
-</html>
+    <!-- Ficha del paciente -->
+    <div class="card bg-base-100 shadow">
+        <div class="card-body">
+
+            <h2 class="card-title text-lg mb-4">Datos personales</h2>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <p class="text-sm text-base-content/50">DNI</p>
+                    <p class="font-medium">{{ patient.dni }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-base-content/50">Fecha de nacimiento</p>
+                    <p class="font-medium">{{ patient.birth_date|date:"d/m/Y"|default:"—" }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-base-content/50">Teléfono</p>
+                    <p class="font-medium">{{ patient.phone|default:"—" }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-base-content/50">Email</p>
+                    <p class="font-medium">{{ patient.email|default:"—" }}</p>
+                </div>
+                <div class="col-span-2">
+                    <p class="text-sm text-base-content/50">Domicilio</p>
+                    <p class="font-medium">{{ patient.address|default:"—" }}</p>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <h2 class="card-title text-lg mb-4">Datos clínicos</h2>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <p class="text-sm text-base-content/50">Fecha de alta</p>
+                    <p class="font-medium">{{ patient.registration_date|date:"d/m/Y" }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-base-content/50">Estado</p>
+                    {% if patient.is_active %}
+                        <span class="badge badge-success">Activo</span>
+                    {% else %}
+                        <span class="badge badge-error">Inactivo</span>
+                    {% endif %}
+                </div>
+                <div class="col-span-2">
+                    <p class="text-sm text-base-content/50">Observaciones</p>
+                    <p class="font-medium">{{ patient.notes|default:"—" }}</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,100 +1,84 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clínica Solaz — Pacientes</title>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .btn-primary { background-color: #2596be !important; border-color: #2596be !important; color: #ffffff !important; }
-        .btn-primary:hover { background-color: #1a7a9e !important; border-color: #1a7a9e !important; }
-        body { background-color: #f0f6fa; color: #404040; }
-    </style>
-</head>
-<body class="min-h-screen p-8">
+{% extends 'base.html' %}
 
-    <div class="max-w-5xl mx-auto">
+{% block title %}Pacientes — Clínica Solaz{% endblock %}
 
-        <!-- Cabecera -->
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold">Pacientes</h1>
-            <a href="{% url 'patients:create' %}" class="btn btn-primary btn-sm">
-                + Nuevo paciente
-            </a>
-        </div>
+{% block content %}
+<div class="max-w-5xl mx-auto">
 
-        <!-- Buscador -->
-        <form method="get" class="mb-6">
-            <div class="flex gap-2">
-                <input
-                    type="text"
-                    name="q"
-                    value="{{ query }}"
-                    placeholder="Buscar por nombre, apellidos, DNI o teléfono..."
-                    class="input input-bordered flex-1"
-                />
-                <button type="submit" class="btn btn-primary">Buscar</button>
-                {% if query %}
-                    <!-- Botón para limpiar la búsqueda -->
-                    <a href="{% url 'patients:list' %}" class="btn btn-outline">Limpiar</a>
-                {% endif %}
-            </div>
-        </form>
-
-        <!-- Tabla de pacientes -->
-        <div class="card bg-base-100 shadow">
-            <div class="card-body p-0">
-                <table class="table table-zebra">
-                    <thead>
-                        <tr>
-                            <th>Apellidos, Nombre</th>
-                            <th>DNI</th>
-                            <th>Teléfono</th>
-                            <th>Email</th>
-                            <th>Alta</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for patient in patients %}
-                        <tr>
-                            <td>
-                                <a href="{% url 'patients:detail' patient.pk %}" class="font-medium hover:underline" style="color: #2596be;">
-                                    {{ patient }}
-                                </a>
-                            </td>
-                            <td>{{ patient.dni }}</td>
-                            <td>{{ patient.phone|default:"—" }}</td>
-                            <td>{{ patient.email|default:"—" }}</td>
-                            <td>{{ patient.registration_date|date:"d/m/Y" }}</td>
-                            <td>
-                                <a href="{% url 'patients:edit' patient.pk %}" class="btn btn-ghost btn-xs">Editar</a>
-                            </td>
-                        </tr>
-                        {% empty %}
-                            <!-- Este bloque se muestra si no hay pacientes -->
-                            <tr>
-                                <td colspan="6" class="text-center py-8 text-base-content/50">
-                                    {% if query %}
-                                        No se encontraron pacientes con "{{ query }}"
-                                    {% else %}
-                                        No hay pacientes registrados todavía.
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Contador de resultados -->
-        <p class="text-sm text-base-content/50 mt-3">
-            {{ patients|length }} paciente{{ patients|length|pluralize }} encontrado{{ patients|length|pluralize }}
-        </p>
-
+    <!-- Cabecera -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold">Pacientes</h1>
+        <a href="{% url 'patients:create' %}" class="btn btn-primary btn-sm">
+            + Nuevo paciente
+        </a>
     </div>
 
-</body>
-</html>
+    <!-- Buscador -->
+    <form method="get" class="mb-6">
+        <div class="flex gap-2">
+            <input
+                type="text"
+                name="q"
+                value="{{ query }}"
+                placeholder="Buscar por nombre, apellidos, DNI o teléfono..."
+                class="input input-bordered flex-1"
+            />
+            <button type="submit" class="btn btn-primary">Buscar</button>
+            {% if query %}
+                <a href="{% url 'patients:list' %}" class="btn btn-outline">Limpiar</a>
+            {% endif %}
+        </div>
+    </form>
+
+    <!-- Tabla de pacientes -->
+    <div class="card bg-base-100 shadow">
+        <div class="card-body p-0">
+            <table class="table table-zebra">
+                <thead>
+                    <tr>
+                        <th>Apellidos, Nombre</th>
+                        <th>DNI</th>
+                        <th>Teléfono</th>
+                        <th>Email</th>
+                        <th>Alta</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for patient in patients %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'patients:detail' patient.pk %}" class="font-medium link-primary">
+                                {{ patient }}
+                            </a>
+                        </td>
+                        <td>{{ patient.dni }}</td>
+                        <td>{{ patient.phone|default:"—" }}</td>
+                        <td>{{ patient.email|default:"—" }}</td>
+                        <td>{{ patient.registration_date|date:"d/m/Y" }}</td>
+                        <td>
+                            <a href="{% url 'patients:edit' patient.pk %}" class="btn btn-ghost btn-xs">Editar</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-8 text-base-content/50">
+                            {% if query %}
+                                No se encontraron pacientes con "{{ query }}"
+                            {% else %}
+                                No hay pacientes registrados todavía.
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <p class="text-sm text-base-content/50 mt-3">
+        {{ patients|length }} paciente{{ patients|length|pluralize }} encontrado{{ patients|length|pluralize }}
+    </p>
+
+</div>
+{% endblock %}

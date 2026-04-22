@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    {# block title permite que cada página defina su propio título #}
+    <title>{% block title %}Clínica Solaz{% endblock %}</title>
+
+    <!-- DaisyUI y Tailwind via CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Colores de la clínica — definidos una sola vez aquí -->
+    <style>
+        .btn-primary { background-color: #2596be !important; border-color: #2596be !important; color: #ffffff !important; }
+        .btn-primary:hover { background-color: #1a7a9e !important; border-color: #1a7a9e !important; }
+        .text-primary { color: #2596be !important; }
+        .bg-primary { background-color: #2596be !important; }
+        body { background-color: #f0f6fa; color: #404040; }
+        .link-primary { color: #2596be; }
+        .link-primary:hover { color: #1a7a9e; text-decoration: underline; }
+    </style>
+
+    <!-- Bloque para CSS extra que cada página pueda necesitar -->
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="min-h-screen">
+
+    <!-- Barra de navegación superior -->
+    <nav class="bg-white shadow-sm px-6 py-3 flex justify-between items-center">
+        <!-- Logo / nombre -->
+        <a href="/pacientes/" class="font-bold text-lg" style="color: #2596be;">
+            Clínica Solaz
+        </a>
+
+        <!-- Menú de navegación -->
+        <div class="flex gap-6 text-sm">
+            <a href="/pacientes/" class="hover:underline" style="color: #404040;">Pacientes</a>
+            <a href="#" class="hover:underline" style="color: #404040;">Bonos</a>
+            <a href="#" class="hover:underline" style="color: #404040;">Ventas</a>
+            <a href="#" class="hover:underline" style="color: #404040;">Reportes</a>
+        </div>
+
+        <!-- Usuario y cerrar sesión -->
+        <div class="flex items-center gap-4 text-sm">
+            <!-- Círculo con el color del fisioterapeuta -->
+            <div
+                class="w-7 h-7 rounded-full border border-base-300"
+                style="background-color: {{ request.user.color }}"
+                title="{{ request.user.full_name }}"
+            ></div>
+            <a href="/perfil/" class="hover:underline" style="color: #404040;">
+                {{ request.user.first_name }}
+            </a>
+            <a href="/logout/" class="hover:underline" style="color: #404040;">
+                Cerrar sesión
+            </a>
+        </div>
+    </nav>
+
+    <!-- Contenido principal — cada página define su contenido aquí -->
+    <main class="p-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Bloque para JS extra que cada página pueda necesitar -->
+    {% block extra_js %}{% endblock %}
+
+</body>
+</html>
