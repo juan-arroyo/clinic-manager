@@ -14,6 +14,9 @@ urlpatterns = [
     # URLs del módulo de usuarios (login, logout, perfil)
     path('', include('apps.users.urls')),
 
+    # URLs del módulo de pacientes
+    path('pacientes/', include('apps.patients.urls')),
+
     # Aquí iremos añadiendo las URLs de cada app en fases posteriores
     # path('', include('apps.users.urls')),
     # path('pacientes/', include('apps.patients.urls')),
