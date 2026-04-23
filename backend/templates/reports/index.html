@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+
+{% block title %}Reportes — Clínica Solaz{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+
+    <!-- Cabecera -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold">Reportes</h1>
+    </div>
+
+    <!-- Filtros -->
+    <form method="get" class="card bg-base-100 shadow mb-6">
+        <div class="card-body">
+            <h2 class="font-semibold text-lg mb-4">Filtros</h2>
+            <div class="grid grid-cols-4 gap-4">
+                <div class="form-control">
+                    <label class="label"><span class="label-text">Fecha desde</span></label>
+                    <input type="date" name="date_from" value="{{ date_from }}" class="input input-bordered w-full" />
+                </div>
+                <div class="form-control">
+                    <label class="label"><span class="label-text">Fecha hasta</span></label>
+                    <input type="date" name="date_to" value="{{ date_to }}" class="input input-bordered w-full" />
+                </div>
+                <div class="form-control">
+                    <label class="label"><span class="label-text">Fisioterapeuta</span></label>
+                    <select name="worker" class="select select-bordered w-full">
+                        <option value="">Todos</option>
+                        {% for worker in workers %}
+                            <option value="{{ worker.pk }}"
+                                {% if selected_worker == worker.pk|stringformat:"s" %}selected{% endif %}>
+                                {{ worker.first_name }} {{ worker.last_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-control justify-end">
+                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Resumen numérico -->
+    <div class="grid grid-cols-3 gap-4 mb-6">
+        <div class="card bg-base-100 shadow">
+            <div class="card-body">
+                <p class="text-sm text-base-content/50">Total ventas</p>
+                <p class="text-3xl font-bold" style="color: #2596be;">{{ total_sales }}</p>
+            </div>
+        </div>
+        <div class="card bg-base-100 shadow">
+            <div class="card-body">
+                <p class="text-sm text-base-content/50">Total facturado</p>
+                <p class="text-3xl font-bold" style="color: #2596be;">{{ total_amount }}€</p>
+            </div>
+        </div>
+        <div class="card bg-base-100 shadow">
+            <div class="card-body">
+                <p class="text-sm text-base-content/50">Exportar a Excel</p>
+                <div class="flex gap-2 mt-1">
+                    <!-- Los filtros activos se pasan como parámetros a las exportaciones -->
+                    <a href="{% url 'reports:export_sales' %}?date_from={{ date_from }}&date_to={{ date_to }}&worker={{ selected_worker }}"
+                       class="btn btn-sm btn-primary">Ventas</a>
+                    <a href="{% url 'reports:export_invoices' %}?date_from={{ date_from }}&date_to={{ date_to }}&worker={{ selected_worker }}"
+                       class="btn btn-sm btn-outline">Facturas</a>
+                    <a href="{% url 'reports:export_fisio' %}?date_from={{ date_from }}&date_to={{ date_to }}&worker={{ selected_worker }}"
+                       class="btn btn-sm btn-outline">Por fisio</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="grid grid-cols-2 gap-6 mb-6">
+
+        <!-- Ventas por mes -->
+        <div class="card bg-base-100 shadow">
+            <div class="card-body">
+                <h2 class="font-semibold text-lg mb-4">Ventas por mes</h2>
+                <canvas id="chartMonth"></canvas>
+            </div>
+        </div>
+
+        <!-- Ventas por fisioterapeuta -->
+        <div class="card bg-base-100 shadow">
+            <div class="card-body">
+                <h2 class="font-semibold text-lg mb-4">Ventas por fisioterapeuta</h2>
+                <canvas id="chartWorker"></canvas>
+            </div>
+        </div>
+
+        <!-- Ventas por tipo de tratamiento -->
+        <div class="card bg-base-100 shadow col-span-2">
+            <div class="card-body">
+                <h2 class="font-semibold text-lg mb-4">Ventas por tipo de tratamiento</h2>
+                <canvas id="chartTreatment"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js via CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // Color principal de la clínica para los gráficos
+    const primaryColor = '#2596be';
+    const primaryLight = '#a8c8e8';
+
+    // --- GRÁFICO: Ventas por mes ---
+    // Los datos vienen del servidor como listas Python convertidas a JSON
+    const monthLabels = {{ months_labels|safe }};
+    const monthData = {{ months_data|safe }};
+
+    new Chart(document.getElementById('chartMonth'), {
+        type: 'bar',  // gráfico de barras
+        data: {
+            labels: monthLabels,
+            datasets: [{
+                label: 'Total (€)',
+                data: monthData,
+                backgroundColor: primaryColor,
+                borderRadius: 4,  // bordes redondeados en las barras
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }  // ocultamos la leyenda — el título ya es suficiente
+            },
+            scales: {
+                y: {
+                    ticks: {
+                        // Añade € al final de cada valor en el eje Y
+                        callback: function(value) {
+                            return value + '€';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // --- GRÁFICO: Ventas por fisioterapeuta ---
+    const workerLabels = {{ worker_labels|safe }};
+    const workerData = {{ worker_data|safe }};
+
+    new Chart(document.getElementById('chartWorker'), {
+        type: 'bar',
+        data: {
+            labels: workerLabels,
+            datasets: [{
+                label: 'Total (€)',
+                data: workerData,
+                backgroundColor: primaryLight,
+                borderRadius: 4,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    ticks: {
+                        // Añade € al final de cada valor en el eje Y
+                        callback: function(value) {
+                            return value + '€';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // --- GRÁFICO: Ventas por tipo de tratamiento ---
+    const treatmentLabels = {{ treatment_labels|safe }};
+    const treatmentData = {{ treatment_data|safe }};
+
+    // Generamos una paleta de colores azules para las barras
+    const treatmentColors = treatmentData.map((_, i) => {
+        const opacity = 1 - (i * 0.08);  // cada barra un poco más transparente
+        return `rgba(37, 150, 190, ${opacity})`;
+    });
+
+    new Chart(document.getElementById('chartTreatment'), {
+        type: 'bar',
+        data: {
+            labels: treatmentLabels,
+            datasets: [{
+                label: 'Total (€)',
+                data: treatmentData,
+                backgroundColor: treatmentColors,
+                borderRadius: 4,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    ticks: {
+                        // Añade € al final de cada valor en el eje Y
+                        callback: function(value) {
+                            return value + '€';
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

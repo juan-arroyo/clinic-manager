@@ -23,6 +23,9 @@ urlpatterns = [
     # URLs del módulo de ventas
     path('ventas/', include('apps.sales.urls')),
 
+    # URLs del módulo de reportes
+    path('reportes/', include('apps.reports.urls')),
+
     # Aquí iremos añadiendo las URLs de cada app en fases posteriores
     # path('', include('apps.users.urls')),
     # path('pacientes/', include('apps.patients.urls')),
