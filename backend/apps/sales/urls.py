@@ -24,5 +24,8 @@ urlpatterns = [
     # Se llama automáticamente cuando el usuario cambia el paciente en el formulario
     path('bonos-paciente/', views.get_patient_bonuses, name='patient_bonuses'),
 
+    # Genera y descarga el PDF de la factura de una venta
+    path('<int:pk>/factura-pdf/', views.generate_invoice_pdf, name='invoice_pdf'),
+
     
 ]

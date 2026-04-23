@@ -15,10 +15,19 @@
                 Venta del {{ sale.date|date:"d/m/Y" }}
             </h1>
         </div>
-        <a href="{% url 'sales:edit' sale.pk %}" class="btn btn-primary btn-sm">
-            Editar
-        </a>
+        <div class="flex gap-2">
+            {% if sale.invoice_issued %}
+                <!-- Solo mostramos el botón si la factura está emitida -->
+                <a href="{% url 'sales:invoice_pdf' sale.pk %}" class="btn btn-outline btn-sm">
+                    📄 Descargar factura
+                </a>
+            {% endif %}
+            <a href="{% url 'sales:edit' sale.pk %}" class="btn btn-primary btn-sm">
+                Editar
+            </a>
+        </div>
     </div>
+
 
     <!-- Ficha de la venta -->
     <div class="card bg-base-100 shadow">

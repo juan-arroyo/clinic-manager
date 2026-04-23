@@ -8,6 +8,13 @@ from django.db.models import Q  # Q permite búsquedas complejas con OR
 from .models import Sale
 from .forms import SaleForm
 from apps.bonuses.models import Bonus
+from reportlab.lib.pagesizes import A4          # tamaño de página A4
+from reportlab.lib.units import cm              # unidades en centímetros
+from reportlab.lib import colors                # colores para el PDF
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from django.http import HttpResponse
+
 
 @login_required
 def sale_list(request):
@@ -106,3 +113,218 @@ def get_patient_bonuses(request):
     return render(request, 'sales/partials/bonus_select.html', {
         'bonuses': bonuses
     })
+
+
+
+@login_required
+def generate_invoice_pdf(request, pk):
+    """
+    Genera el PDF de una factura y lo devuelve para descarga.
+    Solo se puede generar si la venta tiene factura emitida.
+    """
+    # Buscamos la venta
+    sale = get_object_or_404(Sale, pk=pk)
+
+    # Solo generamos PDF si la factura está emitida
+    if not sale.invoice_issued:
+        from django.contrib import messages
+        messages.error(request, 'Esta venta no tiene factura emitida.')
+        return redirect('sales:detail', pk=pk)
+
+    # Preparamos la respuesta HTTP para descarga de PDF
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="factura-{sale.invoice_number}.pdf"'
+
+    # Creamos el documento PDF en memoria
+    doc = SimpleDocTemplate(
+        response,
+        pagesize=A4,
+        rightMargin=2*cm,
+        leftMargin=2*cm,
+        topMargin=2*cm,
+        bottomMargin=2*cm
+    )
+
+    # Color principal de la clínica
+    clinic_blue = colors.HexColor('#2596be')
+
+    # Estilos de texto
+    styles = getSampleStyleSheet()
+
+    # Estilo para el título principal
+    title_style = ParagraphStyle(
+        'ClinicTitle',
+        parent=styles['Heading1'],
+        fontSize=20,
+        textColor=clinic_blue,
+        spaceAfter=0.3*cm,
+    )
+
+    # Estilo para texto normal
+    normal_style = ParagraphStyle(
+        'ClinicNormal',
+        parent=styles['Normal'],
+        fontSize=10,
+        spaceAfter=0.2*cm,
+    )
+
+    # Estilo para texto pequeño
+    small_style = ParagraphStyle(
+        'ClinicSmall',
+        parent=styles['Normal'],
+        fontSize=8,
+        textColor=colors.grey,
+    )
+
+    # Lista de elementos que formarán el PDF (de arriba a abajo)
+    elements = []
+
+    # --- CABECERA --- #
+
+    # Nombre de la clínica
+    elements.append(Paragraph('Clínica Solaz', title_style))
+    elements.append(Paragraph('Fisioterapia Deportiva', small_style))
+    elements.append(Spacer(1, 0.5*cm))  # espacio en blanco
+
+    # Línea separadora
+    elements.append(Table(
+        [['']],
+        colWidths=[17*cm],
+        style=TableStyle([
+            ('LINEBELOW', (0,0), (-1,-1), 1, clinic_blue),
+        ])
+    ))
+    elements.append(Spacer(1, 0.5*cm))
+
+    # --- DATOS DE LA FACTURA --- #
+
+    # Tabla con número de factura y fecha
+    invoice_data = [
+        ['FACTURA', ''],
+        [f'Nº {sale.invoice_number}', f'Fecha: {sale.date.strftime("%d/%m/%Y")}'],
+    ]
+
+    invoice_table = Table(
+        invoice_data,
+        colWidths=[8.5*cm, 8.5*cm],
+        style=TableStyle([
+            ('FONTNAME', (0,0), (0,0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0,0), (0,0), 14),
+            ('TEXTCOLOR', (0,0), (0,0), clinic_blue),
+            ('ALIGN', (1,0), (1,-1), 'RIGHT'),
+            ('FONTSIZE', (0,1), (-1,-1), 10),
+        ])
+    )
+    elements.append(invoice_table)
+    elements.append(Spacer(1, 0.5*cm))
+
+    # --- DATOS DEL PACIENTE --- #
+    elements.append(Paragraph('Datos del cliente', ParagraphStyle(
+        'SectionTitle',
+        parent=styles['Normal'],
+        fontSize=10,
+        textColor=clinic_blue,
+        fontName='Helvetica-Bold',
+        spaceAfter=0.2*cm,
+    )))
+
+    client_data = [
+        ['Nombre:', sale.patient.full_name],
+        ['DNI:', sale.patient.dni],
+    ]
+
+    client_table = Table(
+        client_data,
+        colWidths=[3*cm, 14*cm],
+        style=TableStyle([
+            ('FONTNAME', (0,0), (0,-1), 'Helvetica-Bold'),
+            ('FONTSIZE', (0,0), (-1,-1), 10),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 4),
+        ])
+    )
+    elements.append(client_table)
+    elements.append(Spacer(1, 0.5*cm))
+
+    # --- DETALLE DE LA VENTA --- #
+    elements.append(Paragraph('Detalle', ParagraphStyle(
+        'SectionTitle2',
+        parent=styles['Normal'],
+        fontSize=10,
+        textColor=clinic_blue,
+        fontName='Helvetica-Bold',
+        spaceAfter=0.2*cm,
+    )))
+
+    # Cabecera de la tabla de detalle
+    detail_data = [
+        ['Descripción', 'Tipo de tratamiento', 'Importe'],
+        [
+            sale.description or 'Sesión de fisioterapia',
+            sale.get_treatment_type_display(),
+            f'{sale.amount}€',
+        ]
+    ]
+
+    detail_table = Table(
+        detail_data,
+        colWidths=[8*cm, 5*cm, 4*cm],
+        style=TableStyle([
+            # Cabecera con fondo azul
+            ('BACKGROUND', (0,0), (-1,0), clinic_blue),
+            ('TEXTCOLOR', (0,0), (-1,0), colors.white),
+            ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0,0), (-1,-1), 10),
+            ('ALIGN', (2,0), (2,-1), 'RIGHT'),  # importe alineado a la derecha
+            ('BOTTOMPADDING', (0,0), (-1,-1), 6),
+            ('TOPPADDING', (0,0), (-1,-1), 6),
+            ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, colors.HexColor('#f0f6fa')]),
+            ('GRID', (0,0), (-1,-1), 0.5, colors.HexColor('#d2e6f2')),
+        ])
+    )
+    elements.append(detail_table)
+    elements.append(Spacer(1, 0.5*cm))
+
+    # --- TOTAL --- #
+    total_data = [
+        ['', 'TOTAL:', f'{sale.amount}€'],
+    ]
+
+    total_table = Table(
+        total_data,
+        colWidths=[8*cm, 5*cm, 4*cm],
+        style=TableStyle([
+            ('FONTNAME', (1,0), (-1,-1), 'Helvetica-Bold'),
+            ('FONTSIZE', (0,0), (-1,-1), 12),
+            ('ALIGN', (2,0), (2,-1), 'RIGHT'),
+            ('TEXTCOLOR', (1,0), (-1,-1), clinic_blue),
+            ('LINEABOVE', (1,0), (-1,-1), 1, clinic_blue),
+            ('TOPPADDING', (0,0), (-1,-1), 8),
+        ])
+    )
+    elements.append(total_table)
+    elements.append(Spacer(1, 0.5*cm))
+
+    # --- MÉTODO DE PAGO --- #
+    elements.append(Paragraph(
+        f'Método de pago: {sale.get_payment_method_display()}',
+        normal_style
+    ))
+
+    # --- PIE DE PÁGINA --- #
+    elements.append(Spacer(1, 2*cm))
+    elements.append(Table(
+        [['']],
+        colWidths=[17*cm],
+        style=TableStyle([
+            ('LINEABOVE', (0,0), (-1,-1), 0.5, colors.grey),
+        ])
+    ))
+    elements.append(Paragraph(
+        'Clínica Solaz Fisioterapia Deportiva — Alicante',
+        small_style
+    ))
+
+    # Construimos el PDF con todos los elementos
+    doc.build(elements)
+
+    return response
