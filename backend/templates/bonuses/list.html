@@ -3,7 +3,7 @@
 {% block title %}Bonos — Clínica Solaz{% endblock %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto">
+<div class="max-w-7xl mx-auto">
 
     <!-- Cabecera -->
     <div class="flex justify-between items-center mb-6">
@@ -33,52 +33,55 @@
     <!-- Tabla de bonos -->
     <div class="card bg-base-100 shadow">
         <div class="card-body p-0">
-            <table class="table table-zebra">
-                <thead>
-                    <tr>
-                        <th>Nº Bono</th>
-                        <th>Paciente</th>
-                        <th>Tipo</th>
-                        <th>Sesiones usadas</th>
-                        <th>Sesiones restantes</th>
-                        <th>Estado</th>
-                        <th>Fecha</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for bonus in bonuses %}
-                    <tr>
-                        <td>
-                            <a href="{% url 'bonuses:detail' bonus.pk %}" class="font-medium link-primary">
-                                {{ bonus.bonus_number }}
-                            </a>
-                        </td>
-                        <td>{{ bonus.patient }}</td>
-                        <td>{{ bonus.get_bonus_type_display }}</td>
-                        <td>{{ bonus.sessions_used }}</td>
-                        <td>{{ bonus.sessions_remaining }}</td>
-                        <td>
-                            {% if bonus.is_active %}
-                                <span class="badge badge-success">Activo</span>
-                            {% else %}
-                                <span class="badge badge-error">Agotado</span>
-                            {% endif %}
-                        </td>
-                        <td>{{ bonus.created_at|date:"d/m/Y" }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="7" class="text-center py-8 text-base-content/50">
-                            {% if query %}
-                                No se encontraron bonos con "{{ query }}"
-                            {% else %}
-                                No hay bonos registrados todavía.
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <!-- overflow-x-auto permite scroll horizontal en móvil -->
+            <div class="overflow-x-auto">
+                <table class="table table-zebra">
+                    <thead>
+                        <tr>
+                            <th>Nº Bono</th>
+                            <th>Paciente</th>
+                            <th>Tipo</th>
+                            <th>Sesiones usadas</th>
+                            <th>Sesiones restantes</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bonus in bonuses %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'bonuses:detail' bonus.pk %}" class="font-medium link-primary">
+                                    {{ bonus.bonus_number }}
+                                </a>
+                            </td>
+                            <td>{{ bonus.patient }}</td>
+                            <td>{{ bonus.get_bonus_type_display }}</td>
+                            <td>{{ bonus.sessions_used }}</td>
+                            <td>{{ bonus.sessions_remaining }}</td>
+                            <td>
+                                {% if bonus.is_active %}
+                                    <span class="badge badge-success">Activo</span>
+                                {% else %}
+                                    <span class="badge badge-error">Agotado</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ bonus.created_at|date:"d/m/Y" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-8 text-base-content/50">
+                                {% if query %}
+                                    No se encontraron bonos con "{{ query }}"
+                                {% else %}
+                                    No hay bonos registrados todavía.
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 

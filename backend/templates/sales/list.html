@@ -33,65 +33,68 @@
     <!-- Tabla de ventas -->
     <div class="card bg-base-100 shadow">
         <div class="card-body p-0">
-            <table class="table table-zebra table-sm">
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Paciente</th>
-                        <th>Importe</th>
-                        <th>Tipo</th>
-                        <th>Trabajador</th>
-                        <th>Pago</th>
-                        <th>Factura</th>
-                        <th>Pagado</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for sale in sales %}
-                    <tr>
-                        <td>{{ sale.date|date:"d/m/Y" }}</td>
-                        <td>
-                            <a href="{% url 'patients:detail' sale.patient.pk %}" class="link-primary">
-                                {{ sale.patient.full_name }}
-                            </a>
-                        </td>
-                        <td class="font-medium">{{ sale.amount }}€</td>
-                        <td>{{ sale.get_treatment_type_display }}</td>
-                        <td>{{ sale.worker.first_name }}</td>
-                        <td>{{ sale.get_payment_method_display }}</td>
-                        <td>
-                            {% if sale.invoice_issued %}
-                                <span class="text-sm">{{ sale.invoice_number }}</span>
-                            {% else %}
-                                <span class="text-base-content/30">—</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if sale.is_paid %}
-                                <span class="badge badge-success badge-sm">Sí</span>
-                            {% else %}
-                                <span class="badge badge-error badge-sm">No</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <a href="{% url 'sales:detail' sale.pk %}" class="btn btn-ghost btn-xs">Ver</a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="9" class="text-center py-8 text-base-content/50">
-                            {% if query %}
-                                No se encontraron ventas con "{{ query }}"
-                            {% else %}
-                                No hay ventas registradas todavía.
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+            <!-- overflow-x-auto permite scroll horizontal en móvil -->
+            <div class="overflow-x-auto">
+                <table class="table table-zebra table-sm">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Paciente</th>
+                            <th>Importe</th>
+                            <th>Tipo</th>
+                            <th>Trabajador</th>
+                            <th>Pago</th>
+                            <th>Factura</th>
+                            <th>Pagado</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sale in sales %}
+                        <tr>
+                            <td>{{ sale.date|date:"d/m/Y" }}</td>
+                            <td>
+                                <a href="{% url 'patients:detail' sale.patient.pk %}" class="link-primary">
+                                    {{ sale.patient.full_name }}
+                                </a>
+                            </td>
+                            <td class="font-medium">{{ sale.amount }}€</td>
+                            <td>{{ sale.get_treatment_type_display }}</td>
+                            <td>{{ sale.worker.first_name }}</td>
+                            <td>{{ sale.get_payment_method_display }}</td>
+                            <td>
+                                {% if sale.invoice_issued %}
+                                    <span class="text-sm">{{ sale.invoice_number }}</span>
+                                {% else %}
+                                    <span class="text-base-content/30">—</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if sale.is_paid %}
+                                    <span class="badge badge-success badge-sm">Sí</span>
+                                {% else %}
+                                    <span class="badge badge-error badge-sm">No</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'sales:detail' sale.pk %}" class="btn btn-ghost btn-xs">Ver</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center py-8 text-base-content/50">
+                                {% if query %}
+                                    No se encontraron ventas con "{{ query }}"
+                                {% else %}
+                                    No hay ventas registradas todavía.
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+         </div>
     </div>
 
     <!-- Contador -->

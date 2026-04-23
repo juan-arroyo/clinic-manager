@@ -3,7 +3,7 @@
 {% block title %}{{ title }} — Clínica Solaz{% endblock %}
 
 {% block content %}
-<div class="max-w-2xl mx-auto">
+<div class="max-w-3xl mx-auto">
 
     <!-- Cabecera -->
     <div class="mb-6">
@@ -23,7 +23,7 @@
                 <!-- Datos personales -->
                 <h2 class="font-semibold text-lg mb-4">Datos personales</h2>
 
-                <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div class="form-control">
                         <label class="label"><span class="label-text">DNI *</span></label>
                         {{ form.dni }}
@@ -56,7 +56,7 @@
                 <!-- Contacto -->
                 <h2 class="font-semibold text-lg mb-4">Contacto</h2>
 
-                <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div class="form-control">
                         <label class="label"><span class="label-text">Teléfono</span></label>
                         {{ form.phone }}

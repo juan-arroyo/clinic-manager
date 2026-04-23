@@ -3,7 +3,7 @@
 {% block title %}Pacientes — Clínica Solaz{% endblock %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto">
+<div class="max-w-7xl mx-auto">
 
     <!-- Cabecera -->
     <div class="flex justify-between items-center mb-6">
@@ -33,46 +33,49 @@
     <!-- Tabla de pacientes -->
     <div class="card bg-base-100 shadow">
         <div class="card-body p-0">
-            <table class="table table-zebra">
-                <thead>
-                    <tr>
-                        <th>Apellidos, Nombre</th>
-                        <th>DNI</th>
-                        <th>Teléfono</th>
-                        <th>Email</th>
-                        <th>Alta</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for patient in patients %}
-                    <tr>
-                        <td>
-                            <a href="{% url 'patients:detail' patient.pk %}" class="font-medium link-primary">
-                                {{ patient }}
-                            </a>
-                        </td>
-                        <td>{{ patient.dni }}</td>
-                        <td>{{ patient.phone|default:"—" }}</td>
-                        <td>{{ patient.email|default:"—" }}</td>
-                        <td>{{ patient.registration_date|date:"d/m/Y" }}</td>
-                        <td>
-                            <a href="{% url 'patients:edit' patient.pk %}" class="btn btn-ghost btn-xs">Editar</a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="6" class="text-center py-8 text-base-content/50">
-                            {% if query %}
-                                No se encontraron pacientes con "{{ query }}"
-                            {% else %}
-                                No hay pacientes registrados todavía.
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <!-- overflow-x-auto permite scroll horizontal en móvil -->
+            <div class="overflow-x-auto">
+                <table class="table table-zebra">
+                    <thead>
+                        <tr>
+                            <th>Apellidos, Nombre</th>
+                            <th>DNI</th>
+                            <th>Teléfono</th>
+                            <th>Email</th>
+                            <th>Alta</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for patient in patients %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'patients:detail' patient.pk %}" class="font-medium link-primary">
+                                    {{ patient }}
+                                </a>
+                            </td>
+                            <td>{{ patient.dni }}</td>
+                            <td>{{ patient.phone|default:"—" }}</td>
+                            <td>{{ patient.email|default:"—" }}</td>
+                            <td>{{ patient.registration_date|date:"d/m/Y" }}</td>
+                            <td>
+                                <a href="{% url 'patients:edit' patient.pk %}" class="btn btn-ghost btn-xs">Editar</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-8 text-base-content/50">
+                                {% if query %}
+                                    No se encontraron pacientes con "{{ query }}"
+                                {% else %}
+                                    No hay pacientes registrados todavía.
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 

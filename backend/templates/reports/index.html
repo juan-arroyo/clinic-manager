@@ -14,7 +14,7 @@
     <form method="get" class="card bg-base-100 shadow mb-6">
         <div class="card-body">
             <h2 class="font-semibold text-lg mb-4">Filtros</h2>
-            <div class="grid grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div class="form-control">
                     <label class="label"><span class="label-text">Fecha desde</span></label>
                     <input type="date" name="date_from" value="{{ date_from }}" class="input input-bordered w-full" />
@@ -43,7 +43,7 @@
     </form>
 
     <!-- Resumen numérico -->
-    <div class="grid grid-cols-3 gap-4 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div class="card bg-base-100 shadow">
             <div class="card-body">
                 <p class="text-sm text-base-content/50">Total ventas</p>
@@ -73,7 +73,7 @@
     </div>
 
     <!-- Gráficos -->
-    <div class="grid grid-cols-2 gap-6 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
 
         <!-- Ventas por mes -->
         <div class="card bg-base-100 shadow">
@@ -92,7 +92,7 @@
         </div>
 
         <!-- Ventas por tipo de tratamiento -->
-        <div class="card bg-base-100 shadow col-span-2">
+        <div class="card bg-base-100 shadow md:col-span-2">
             <div class="card-body">
                 <h2 class="font-semibold text-lg mb-4">Ventas por tipo de tratamiento</h2>
                 <canvas id="chartTreatment"></canvas>

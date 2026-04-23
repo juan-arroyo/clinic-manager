@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     {# block title permite que cada página defina su propio título #}
     <title>{% block title %}Clínica Solaz{% endblock %}</title>
 
-    <!-- DaisyUI y Tailwind via CDN -->
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -22,55 +20,85 @@
         .link-primary:hover { color: #1a7a9e; text-decoration: underline; }
     </style>
 
-    <!-- Bloque para CSS extra que cada página pueda necesitar -->
     {% block extra_css %}{% endblock %}
 </head>
 
 <body class="min-h-screen">
 
-    <!-- Barra de navegación superior -->
-    <nav class="bg-white shadow-sm px-6 py-3 flex justify-between items-center">
-        <!-- Logo / nombre -->
-        <a href="/pacientes/" class="font-bold text-lg" style="color: #2596be;">
-            Clínica Solaz
-        </a>
+    <!-- Barra de navegación -->
+    <!-- x-data="{ open: false }" inicializa Alpine.js con una variable 'open' para el menú móvil -->
+    <nav class="bg-white shadow-sm px-6 py-3" x-data="{ open: false }">
+        <div class="flex justify-between items-center">
 
-        <!-- Menú de navegación -->
-        <div class="flex gap-6 text-sm">
-            <a href="{% url 'patients:list' %}" class="hover:underline" style="color: #404040;">Pacientes</a>
-            <a href="{% url 'bonuses:list' %}" class="hover:underline" style="color: #404040;">Bonos</a>
-            <a href="{% url 'sales:list' %}" class="hover:underline" style="color: #404040;">Ventas</a>
-            <a href="{% url 'reports:index' %}" class="hover:underline" style="color: #404040;">Reportes</a>
+            <!-- Logo -->
+            <a href="/" class="font-bold text-lg" style="color: #2596be;">
+                Clínica Solaz
+            </a>
+
+            <!-- Menú desktop — oculto en móvil -->
+            <div class="hidden md:flex gap-6 text-sm">
+                <a href="{% url 'patients:list' %}" class="hover:underline" style="color: #404040;">Pacientes</a>
+                <a href="{% url 'bonuses:list' %}" class="hover:underline" style="color: #404040;">Bonos</a>
+                <a href="{% url 'sales:list' %}" class="hover:underline" style="color: #404040;">Ventas</a>
+                <a href="{% url 'reports:index' %}" class="hover:underline" style="color: #404040;">Reportes</a>
+            </div>
+
+            <!-- Usuario desktop — oculto en móvil -->
+            <div class="hidden md:flex items-center gap-4 text-sm">
+                <div
+                    class="w-7 h-7 rounded-full border border-base-300"
+                    style="background-color: {{ request.user.color }}"
+                    title="{{ request.user.get_full_name }}"
+                ></div>
+                <a href="/perfil/" class="hover:underline" style="color: #404040;">
+                    {{ request.user.first_name }}
+                </a>
+                <a href="/logout/" class="hover:underline" style="color: #404040;">
+                    Cerrar sesión
+                </a>
+            </div>
+
+            <!-- Botón hamburguesa — solo visible en móvil -->
+            <!-- @click alterna la variable 'open' de Alpine.js -->
+            <button
+                class="md:hidden btn btn-ghost btn-sm"
+                @click="open = !open"
+            >
+                <!-- Icono de menú (tres líneas) -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+
         </div>
 
-        <!-- Usuario y cerrar sesión -->
-        <div class="flex items-center gap-4 text-sm">
-            <!-- Círculo con el color del fisioterapeuta -->
-            <div
-                class="w-7 h-7 rounded-full border border-base-300"
-                style="background-color: {{ request.user.color }}"
-                title="{{ request.user.full_name }}"
-            ></div>
-            <a href="/perfil/" class="hover:underline" style="color: #404040;">
-                {{ request.user.first_name }}
-            </a>
-            <a href="/logout/" class="hover:underline" style="color: #404040;">
-                Cerrar sesión
-            </a>
+        <!-- Menú móvil — solo visible cuando open=true -->
+        <!-- x-show muestra/oculta el elemento según la variable 'open' -->
+        <div class="md:hidden mt-3 pb-2 border-t border-base-200" x-show="open">
+            <div class="flex flex-col gap-3 pt-3 text-sm">
+                <a href="{% url 'patients:list' %}" class="hover:underline" style="color: #404040;">Pacientes</a>
+                <a href="{% url 'bonuses:list' %}" class="hover:underline" style="color: #404040;">Bonos</a>
+                <a href="{% url 'sales:list' %}" class="hover:underline" style="color: #404040;">Ventas</a>
+                <a href="{% url 'reports:index' %}" class="hover:underline" style="color: #404040;">Reportes</a>
+                <div class="divider my-1"></div>
+                <a href="/perfil/" class="hover:underline" style="color: #404040;">Mi perfil</a>
+                <a href="/logout/" class="hover:underline" style="color: #404040;">Cerrar sesión</a>
+            </div>
         </div>
+
     </nav>
 
-    <!-- Contenido principal — cada página define su contenido aquí -->
-    <main class="p-8">
+    <!-- Contenido principal -->
+    <main class="p-4 md:p-8">
         {% block content %}{% endblock %}
     </main>
 
-    <!-- HTMX — permite actualizar partes de la página sin recargar -->
-    <!-- hx-boost convierte los enlaces normales en peticiones HTMX automáticamente -->
+    <!-- HTMX -->
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 
+    <!-- Alpine.js — para el menú móvil -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-    <!-- Bloque para JS extra que cada página pueda necesitar -->
     {% block extra_js %}{% endblock %}
 
 </body>
