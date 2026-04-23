@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio — Clínica Solaz{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+
+    <!-- Cabecera -->
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold">Bienvenido, {{ request.user.first_name }}</h1>
+        <p class="text-base-content/50 text-sm">{{ today|date:"l, d \d\e F \d\e Y" }}</p>
+    </div>
+
+    <!-- Tarjetas de resumen -->
+    <div class="grid grid-cols-4 gap-4 mb-8">
+
+        <!-- Ventas del mes -->
+        <div class="card bg-base-100 shadow">
+            <div class="card-body">
+                <p class="text-sm text-base-content/50">Ventas este mes</p>
+                <p class="text-3xl font-bold" style="color: #2596be;">{{ count_month }}</p>
+                <p class="text-sm text-base-content/50">sesiones</p>
+            </div>
+        </div>
+
+        <!-- Facturado del mes -->
+        <div class="card bg-base-100 shadow">
+            <div class="card-body">
+                <p class="text-sm text-base-content/50">Facturado este mes</p>
+                <p class="text-3xl font-bold" style="color: #2596be;">{{ total_month }}€</p>
+                <p class="text-sm text-base-content/50">total</p>
+            </div>
+        </div>
+
+        <!-- Pacientes activos -->
+        <div class="card bg-base-100 shadow">
+            <div class="card-body">
+                <p class="text-sm text-base-content/50">Pacientes activos</p>
+                <p class="text-3xl font-bold" style="color: #2596be;">{{ total_patients }}</p>
+                <p class="text-sm text-base-content/50">registrados</p>
+            </div>
+        </div>
+
+        <!-- Bonos activos -->
+        <div class="card bg-base-100 shadow">
+            <div class="card-body">
+                <p class="text-sm text-base-content/50">Bonos activos</p>
+                <p class="text-3xl font-bold" style="color: #2596be;">{{ total_active_bonuses }}</p>
+                <p class="text-sm text-base-content/50">en curso</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="grid grid-cols-3 gap-6">
+
+        <!-- Últimas ventas -->
+        <div class="card bg-base-100 shadow col-span-2">
+            <div class="card-body">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="font-semibold text-lg">Últimas ventas</h2>
+                    <a href="{% url 'sales:list' %}" class="text-sm link-primary">Ver todas →</a>
+                </div>
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Paciente</th>
+                            <th>Tipo</th>
+                            <th>Importe</th>
+                            <th>Trabajador</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sale in latest_sales %}
+                        <tr>
+                            <td>{{ sale.date|date:"d/m/Y" }}</td>
+                            <td>
+                                <a href="{% url 'patients:detail' sale.patient.pk %}" class="link-primary">
+                                    {{ sale.patient.full_name }}
+                                </a>
+                            </td>
+                            <td>{{ sale.get_treatment_type_display }}</td>
+                            <td class="font-medium">{{ sale.amount }}€</td>
+                            <td>
+                                <div class="flex items-center gap-2">
+                                    <!-- Círculo con el color del fisioterapeuta -->
+                                    <div
+                                        class="w-4 h-4 rounded-full"
+                                        style="background-color: {{ sale.worker.color }}"
+                                    ></div>
+                                    {{ sale.worker.first_name }}
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-base-content/50">
+                                No hay ventas registradas todavía.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Accesos rápidos -->
+        <div class="card bg-base-100 shadow">
+            <div class="card-body">
+                <h2 class="font-semibold text-lg mb-4">Accesos rápidos</h2>
+                <div class="flex flex-col gap-3">
+                    <a href="{% url 'sales:create' %}" class="btn btn-primary w-full">
+                        + Nueva venta
+                    </a>
+                    <a href="{% url 'patients:create' %}" class="btn btn-outline w-full">
+                        + Nuevo paciente
+                    </a>
+                    <a href="{% url 'bonuses:create' %}" class="btn btn-outline w-full">
+                        + Nuevo bono
+                    </a>
+                    <div class="divider"></div>
+                    <a href="{% url 'reports:index' %}" class="btn btn-ghost w-full">
+                        Ver reportes
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

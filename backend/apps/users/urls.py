@@ -16,4 +16,7 @@ urlpatterns = [
 
     # Perfil del usuario autenticado
     path('perfil/', views.profile_view, name='profile'),
+
+    # Dashboard — página de inicio
+    path('', views.dashboard_view, name='dashboard'),
 ]
