@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}Factura {{ invoice.number }} — Gestión Clínica{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+
+    <!-- Cabecera -->
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <a href="{% url 'sales:detail' sale.pk %}" class="text-sm link-primary mb-1 block">
+                ← Volver a la venta
+            </a>
+            <h1 class="text-2xl font-bold">Factura {{ invoice.number }}</h1>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="flex gap-2">
+            <a href="{% url 'sales:invoice_edit' sale.pk %}"
+               class="btn btn-outline btn-sm" style="color: #2596be; border-color: #2596be;">
+                ✏️ Editar
+            </a>
+            <a href="{% url 'sales:invoice_pdf' sale.pk %}"
+               class="btn btn-outline btn-sm" style="color: #2596be; border-color: #2596be;">
+                📄 Descargar PDF
+            </a>
+            <form method="post" action="{% url 'sales:invoice_send' sale.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary btn-sm">
+                    📧 Enviar por email
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Info del último envío -->
+    {% if invoice.last_sent_at %}
+    <div class="alert mb-6" style="background-color: #f0f6fa; border-color: #2596be;">
+        <span class="text-sm">
+            📬 Factura enviada el : <strong>{{ invoice.last_sent_at|date:"d/m/Y \a \l\a\s H:i" }}</strong>
+            a <strong>{{ invoice.recipient_email }}</strong>
+        </span>
+    </div>
+    {% endif %}
+
+    <!-- Detalle de la factura -->
+    <div class="card bg-base-100 shadow">
+        <div class="card-body">
+
+            <!-- Cabecera factura -->
+            <div class="flex justify-between items-start mb-6">
+                <div>
+                    <h2 class="text-xl font-bold" style="color: #2596be;">Gestión Clínica</h2>
+                    <p class="text-sm text-base-content/50">Fisioterapia Deportiva</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-base-content/50">Nº Factura</p>
+                    <p class="font-bold text-lg">{{ invoice.number }}</p>
+                    <p class="text-sm text-base-content/50 mt-1">Fecha de emisión</p>
+                    <p class="font-medium">{{ invoice.issued_at|date:"d/m/Y" }}</p>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Datos del cliente -->
+            <div class="mb-4">
+                <p class="text-sm font-semibold text-base-content/50 mb-2">CLIENTE</p>
+                <p class="font-medium">{{ sale.patient.full_name }}</p>
+                <p class="text-sm text-base-content/50">DNI: {{ sale.patient.dni }}</p>
+                {% if sale.patient.email %}
+                    <p class="text-sm text-base-content/50">{{ sale.patient.email }}</p>
+                {% endif %}
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Cuerpo editable -->
+            <div class="mb-4">
+                <p class="text-sm font-semibold text-base-content/50 mb-2">DETALLE</p>
+                <!-- whitespace-pre-line respeta los saltos de línea del textarea -->
+                <p class="whitespace-pre-line">{{ invoice.body }}</p>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Total -->
+            <div class="flex justify-end">
+                <div class="text-right">
+                    <p class="text-sm text-base-content/50">TOTAL</p>
+                    <p class="text-2xl font-bold" style="color: #2596be;">{{ sale.amount }}€</p>
+                    <p class="text-sm text-base-content/50">{{ sale.get_payment_method_display }}</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

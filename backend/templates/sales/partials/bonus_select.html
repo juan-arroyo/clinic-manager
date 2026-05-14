@@ -3,13 +3,23 @@
      HTMX lo inserta dentro del formulario cuando el usuario cambia el paciente.
      Por eso no tiene DOCTYPE, html, head ni body. -->
 
-<select name="bonus" class="select select-bordered w-full">
-    <option value="">— Sin bono —</option>
-    {% for bonus in bonuses %}
-        <option value="{{ bonus.pk }}">
-            {{ bonus.bonus_number }} — {{ bonus.get_bonus_type_display }} ({{ bonus.sessions_remaining }} restantes)
-        </option>
-    {% empty %}
-        <option value="" disabled>Este paciente no tiene bonos activos</option>
-    {% endfor %}
-</select>
+{% if bonuses %}
+
+    <h2 class="font-semibold text-lg mb-4">Bono</h2>
+
+    <div class="text-sm font-medium mb-4 px-4 py-2 rounded-lg" style="background-color: #2596be; color: #ffffff;">
+        Este paciente tiene un bono activo
+    </div>
+
+    <div class="form-control mb-4">
+        <select name="bonus" class="select select-bordered w-full">
+            {% for bonus in bonuses %}
+                <option value="{{ bonus.pk }}" {% if forloop.first %}selected{% endif %}>
+                    {{ bonus.bonus_number }} — {{ bonus.get_bonus_type_display }} ({{ bonus.sessions_remaining }} restantes)
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="divider"></div>
+
+{% endif %}

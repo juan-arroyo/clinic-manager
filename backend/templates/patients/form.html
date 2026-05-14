@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ title }} — Clínica Solaz{% endblock %}
+{% block title %}{{ title }} — Gestión Clínica{% endblock %}
 
 {% block content %}
 <div class="max-w-3xl mx-auto">
@@ -81,21 +81,21 @@
                     {{ form.notes }}
                 </div>
 
+                {% if patient %}
+                {# Solo mostramos el campo "activo" al editar, no al crear #}
+                {# En creación, el paciente siempre nace activo por defecto #}
                 <div class="form-control mb-6">
                     <label class="label cursor-pointer justify-start gap-3">
                         {{ form.is_active }}
                         <span class="label-text">Paciente activo</span>
                     </label>
                 </div>
+                {% endif %}
 
                 <!-- Botones -->
                 <div class="flex gap-3">
                     <button type="submit" class="btn btn-primary">Guardar</button>
-                    {% if patient %}
-                        <a href="{% url 'patients:detail' patient.pk %}" class="btn btn-outline">Cancelar</a>
-                    {% else %}
-                        <a href="{% url 'patients:list' %}" class="btn btn-outline">Cancelar</a>
-                    {% endif %}
+                    <a href="{% url 'patients:list' %}" class="btn btn-outline">Cancelar</a>
                 </div>
 
             </form>

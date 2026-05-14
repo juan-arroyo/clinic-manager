@@ -1,0 +1,20 @@
+{% if patients %}
+    <ul class="menu bg-base-100 border border-base-300 rounded-box shadow-md w-full mt-1">
+        {% for patient in patients %}
+            <li>
+                <!-- Al hacer clic, rellenamos los campos Y pedimos los bonos manualmente con htmx.ajax -->
+                <button
+                    type="button"
+                    onclick="
+                        document.getElementById('patient-search').value = '{{ patient.last_name }}, {{ patient.first_name }}';
+                        document.getElementById('patient-id').value = '{{ patient.pk }}';
+                        document.getElementById('patient-results').innerHTML = '';
+                        htmx.ajax('GET', '{% url 'sales:patient_bonuses' %}?patient={{ patient.pk }}', {target: '#bonus-htmx-container', swap: 'innerHTML'});
+                    "
+                >
+                    {{ patient.last_name }}, {{ patient.first_name }}
+                </button>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}

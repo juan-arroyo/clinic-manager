@@ -1,29 +1,17 @@
 # backend/apps/patients/forms.py
-# Formulario de paciente.
-# Django genera automáticamente los campos a partir del modelo.
 
 from django import forms
 from .models import Patient
 
 
 class PatientForm(forms.ModelForm):
-    # ModelForm crea automáticamente los campos del formulario
-    # basándose en los campos del modelo Patient
 
     class Meta:
-        model = Patient      # modelo del que generamos el formulario
-        fields = [           # campos que incluimos en el formulario
-            'dni',
-            'first_name',
-            'last_name',
-            'birth_date',
-            'phone',
-            'email',
-            'address',
-            'notes',
-            'is_active',
+        model = Patient
+        fields = [
+            'dni', 'first_name', 'last_name', 'birth_date',
+            'phone', 'email', 'address', 'notes',
         ]
-        # Personalizamos los widgets (el tipo de input HTML de cada campo)
         widgets = {
             'dni': forms.TextInput(attrs={
                 'class': 'input input-bordered w-full',
@@ -37,10 +25,13 @@ class PatientForm(forms.ModelForm):
                 'class': 'input input-bordered w-full',
                 'placeholder': 'Apellidos'
             }),
-            'birth_date': forms.DateInput(attrs={
-                'class': 'input input-bordered w-full',
-                'type': 'date'  # input de tipo fecha nativo del navegador
-            }),
+            'birth_date': forms.DateInput(
+                format='%Y-%m-%d',  # formato requerido por input type="date"
+                attrs={
+                    'class': 'input input-bordered w-full',
+                    'type': 'date'
+                }
+            ),
             'phone': forms.TextInput(attrs={
                 'class': 'input input-bordered w-full',
                 'placeholder': '600 000 000'

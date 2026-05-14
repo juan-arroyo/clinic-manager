@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} — Gestión Clínica{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+
+    <!-- Cabecera -->
+    <div class="mb-6">
+        <a href="{% url 'sales:detail' sale.pk %}" class="text-sm link-primary mb-1 block">
+            ← Volver a la venta
+        </a>
+        <h1 class="text-2xl font-bold">{{ title }}</h1>
+    </div>
+
+    <!-- Resumen de la venta asociada -->
+    <div class="card bg-base-100 shadow mb-6">
+        <div class="card-body py-4">
+            <p class="text-sm text-base-content/50 mb-2">Venta asociada</p>
+            <div class="grid grid-cols-3 gap-4 text-sm">
+                <div>
+                    <p class="text-base-content/50">Paciente</p>
+                    <p class="font-medium">{{ sale.patient.full_name }}</p>
+                </div>
+                <div>
+                    <p class="text-base-content/50">Fecha sesión</p>
+                    <p class="font-medium">{{ sale.date|date:"d/m/Y" }}</p>
+                </div>
+                <div>
+                    <p class="text-base-content/50">Importe</p>
+                    <p class="font-medium">{{ sale.amount }}€</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulario -->
+    <div class="card bg-base-100 shadow">
+        <div class="card-body">
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div class="form-control">
+                        <label class="label"><span class="label-text">Fecha de emisión *</span></label>
+                        {{ form.issued_at }}
+                        {% if form.issued_at.errors %}
+                            <span class="text-error text-sm mt-1">{{ form.issued_at.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="form-control">
+                        <label class="label"><span class="label-text">Email destinatario *</span></label>
+                        {{ form.recipient_email }}
+                        {% if form.recipient_email.errors %}
+                            <span class="text-error text-sm mt-1">{{ form.recipient_email.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-control mb-6">
+                    <label class="label">
+                        <span class="label-text">Cuerpo de la factura *</span>
+                        <span class="label-text-alt text-base-content/50">Edita libremente el contenido</span>
+                    </label>
+                    {{ form.body }}
+                    {% if form.body.errors %}
+                        <span class="text-error text-sm mt-1">{{ form.body.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="flex gap-3">
+                    <button type="submit" class="btn btn-primary">Guardar factura</button>
+                    <a href="{% url 'sales:detail' sale.pk %}" class="btn btn-outline">Cancelar</a>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

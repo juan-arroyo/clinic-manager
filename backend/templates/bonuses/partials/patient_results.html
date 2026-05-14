@@ -1,0 +1,28 @@
+<!-- bonuses/partials/patient_results.html -->
+<!-- Fragmento HTML que HTMX inserta en el formulario mientras la usuaria escribe.
+     No tiene DOCTYPE, html, head ni body — es solo un trozo de HTML. -->
+
+{% if patients %}
+    <ul class="menu bg-base-100 border border-base-300 rounded-box shadow-md w-full mt-1">
+        {% for patient in patients %}
+            <li>
+                <!-- Al hacer clic, HTMX rellena el input visible y el campo oculto -->
+                <button
+                    type="button"
+                    hx-on:click="
+                        document.getElementById('patient-search').value = '{{ patient.full_name }}';
+                        document.getElementById('patient-id').value = '{{ patient.pk }}';
+                        document.getElementById('patient-results').innerHTML = '';
+                    "
+                    class="text-left"
+                >
+                    {{ patient.last_name }}, {{ patient.first_name }}
+                </button>
+            </li>
+        {% endfor %}
+    </ul>
+
+{% elif query and query|length >= 2 %}
+    <p class="text-sm text-base-content/50 mt-2 px-1">No se encontraron pacientes.</p>
+
+{% endif %}

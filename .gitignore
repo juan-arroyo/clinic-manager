@@ -1,29 +1,41 @@
 # .gitignore
 
-# Variables de entorno — contienen contraseñas y claves secretas
+# --- SECRETOS ---
 .env
+.env.*
 
-# Caché de Python — archivos compilados que genera automáticamente Python
+# --- PYTHON ---
 __pycache__/
 *.pyc
 *.pyo
 
-# Entornos virtuales — librerías instaladas localmente
+# --- DJANGO ---
+*.sqlite3
+backend/staticfiles/
+static/
+backend/media/
+media/
+
+# --- DOCKER ---
+postgres_data/
+
+# --- ENTORNOS VIRTUALES ---
 venv/
 .venv/
 
-# Base de datos SQLite — no la usaremos, pero por si acaso
-*.sqlite3
-
-# Archivos estáticos recolectados por Django
-backend/staticfiles/
-
-# Archivos subidos por usuarios
-backend/media/
-
-# Archivos del sistema operativo
+# --- SISTEMA OPERATIVO ---
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# VSCode
+# --- EDITORES ---
 .vscode/
+
+# --- LOGS ---
+*.log
+logs/
+
+# --- BACKUPS ---
+*.bak
+*.backup
+docker-compose.yml.bak

@@ -1,22 +1,13 @@
 # backend/apps/users/urls.py
-# URLs del módulo de usuarios.
-# Define las rutas relacionadas con autenticación y perfil.
 
 from django.urls import path
-from . import views  # importamos las vistas de esta misma app
+from . import views
 
-app_name = 'users'  # namespace — permite usar 'users:login' en las templates
+app_name = 'users'  # namespace para referenciar URLs como 'users:login' en templates
 
 urlpatterns = [
-    # Página de login — muestra el formulario y procesa el envío
     path('login/', views.login_view, name='login'),
-
-    # Cerrar sesión
     path('logout/', views.logout_view, name='logout'),
-
-    # Perfil del usuario autenticado
     path('perfil/', views.profile_view, name='profile'),
-
-    # Dashboard — página de inicio
     path('', views.dashboard_view, name='dashboard'),
 ]

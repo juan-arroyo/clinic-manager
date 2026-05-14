@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ title }} — Clínica Solaz{% endblock %}
+{% block title %}{{ title }} — Gestión Clínica{% endblock %}
 
 {% block content %}
 <div class="max-w-3xl mx-auto">
@@ -22,7 +22,33 @@
 
                 <div class="form-control mb-4">
                     <label class="label"><span class="label-text">Paciente *</span></label>
-                    {{ form.patient }}
+
+                    <!-- hx-get llama a la vista search_patients mientras escribe -->
+                    <!-- hx-trigger="keyup changed delay:300ms" espera 300ms tras cada tecla — evita llamadas innecesarias -->
+                    <!-- hx-target="#patient-results" inserta los resultados en el div de abajo -->
+                    <input
+                        type="text"
+                        id="patient-search"
+                        placeholder="Escribe el nombre del paciente..."
+                        class="input input-bordered w-full"
+                        autocomplete="off"
+                        hx-get="{% url 'bonuses:search_patients' %}"
+                        hx-trigger="keyup changed delay:300ms"
+                        hx-target="#patient-results"
+                        hx-include="#patient-search"
+                        name="q"
+                    />
+
+                    <!-- Campo oculto — guarda el ID del paciente seleccionado -->
+                    <!-- Es lo que Django recibe al enviar el formulario -->
+                    <input
+                        type="hidden"
+                        id="patient-id"
+                        name="patient"
+                    />
+
+                    <div id="patient-results"></div>
+
                     {% if form.patient.errors %}
                         <span class="text-error text-sm mt-1">{{ form.patient.errors.0 }}</span>
                     {% endif %}

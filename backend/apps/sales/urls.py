@@ -1,5 +1,4 @@
 # backend/apps/sales/urls.py
-# URLs del módulo de ventas.
 
 from django.urls import path
 from . import views
@@ -7,25 +6,19 @@ from . import views
 app_name = 'sales'
 
 urlpatterns = [
-    # Listado de ventas
     path('', views.sale_list, name='list'),
-
-    # Detalle de una venta
     path('<int:pk>/', views.sale_detail, name='detail'),
-
-    # Crear nueva venta
     path('nueva/', views.sale_create, name='create'),
-
-    # Editar venta existente
     path('<int:pk>/editar/', views.sale_edit, name='edit'),
 
+    # Endpoints HTMX — responden fragmentos HTML sin recargar la página
+    path('bonos-paciente/', views.get_patient_bonuses, name='patient_bonuses'),       # bonos activos al cambiar paciente
+    path('buscar-paciente/', views.search_patients_sales, name='search_patients'),    # búsqueda en tiempo real
 
-    # Endpoint HTMX — devuelve los bonos activos de un paciente
-    # Se llama automáticamente cuando el usuario cambia el paciente en el formulario
-    path('bonos-paciente/', views.get_patient_bonuses, name='patient_bonuses'),
-
-    # Genera y descarga el PDF de la factura de una venta
-    path('<int:pk>/factura-pdf/', views.generate_invoice_pdf, name='invoice_pdf'),
-
-    
+    # Ciclo de vida de la factura
+    path('<int:pk>/factura/', views.invoice_detail, name='invoice_detail'),
+    path('<int:pk>/factura/crear/', views.invoice_create, name='invoice_create'),
+    path('<int:pk>/factura/editar/', views.invoice_edit, name='invoice_edit'),
+    path('<int:pk>/factura/pdf/', views.generate_invoice_pdf, name='invoice_pdf'),
+    path('<int:pk>/factura/enviar/', views.invoice_send, name='invoice_send'),
 ]

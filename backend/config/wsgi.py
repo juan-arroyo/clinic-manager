@@ -1,11 +1,11 @@
 # backend/config/wsgi.py
-# Punto de entrada para el servidor WSGI (Gunicorn en producción).
-# WSGI es el protocolo estándar que conecta Django con el servidor web.
+# Punto de entrada para Gunicorn en producción.
 
 import os
 from django.core.wsgi import get_wsgi_application
 
-# Le decimos a Django qué archivo de settings usar
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.dev')
+# prod.py por defecto. Si DJANGO_SETTINGS_MODULE ya está definida en el entorno
+# (como ocurre en docker-compose.yml), setdefault no la sobreescribe.
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.prod')
 
 application = get_wsgi_application()

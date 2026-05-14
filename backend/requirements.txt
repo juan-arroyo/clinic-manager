@@ -1,22 +1,21 @@
-# requirements.txt
-# Lista de librerías Python que necesita el proyecto.
-# Se instalan automáticamente cuando Docker construye el contenedor.
-
-# --- Framework principal ---
+# --- Framework ---
 Django==5.1.4
 
 # --- Base de datos ---
-psycopg2-binary==2.9.10     # conector entre Python y PostgreSQL
+psycopg2-binary==2.9.10     # conector Python ↔ PostgreSQL
 
 # --- Variables de entorno ---
-python-decouple==3.8        # para leer variables del archivo .env de forma limpia
+python-decouple==3.8
 
-# --- Admin mejorado ---
-django-unfold==0.42.0       # interfaz de administración más moderna
+# --- Admin ---
+django-jazzmin==3.0.1
 
-# --- Frontend HTMX ---
-django-htmx==1.21.0         # integración de HTMX con Django
+# --- Frontend ---
+django-htmx==1.21.0
 
-# --- Reportes y exportación ---
-openpyxl==3.1.5             # generación de archivos Excel
-reportlab==4.2.5            # generación de archivos PDF (facturas)
+# --- Exportación ---
+openpyxl==3.1.5             # Excel
+reportlab==4.2.5            # PDF (facturas)
+
+# --- Servidor de producción ---
+gunicorn==21.2.0

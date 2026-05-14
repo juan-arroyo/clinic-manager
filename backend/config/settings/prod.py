@@ -1,16 +1,25 @@
 # backend/config/settings/prod.py
 # Configuración específica de producción.
-# Se usará cuando despleguemos en la Raspberry Pi o VPS.
 
-from .base import *        # importamos toda la configuración base
+from .base import *
 from decouple import config
 
-# En producción, DEBUG=False — nunca mostrar errores internos al usuario
 DEBUG = False
 
-# En producción se añadirán los dominios reales aquí
-# ALLOWED_HOSTS = config('ALLOWED_HOSTS').split(',')
+ALLOWED_HOSTS = [
+    'clinic.jmarroyo.es',
+    'localhost',
+    '127.0.0.1',
+]
 
-# Seguridad adicional para producción
+# Cloudflare gestiona HTTPS externamente — Django necesita confiar en la URL pública con https://
+CSRF_TRUSTED_ORIGINS = [
+    'https://clinic.jmarroyo.es',
+    'http://localhost',
+    'http://127.0.0.1',
+]
+
+# --- SEGURIDAD ---
 SECURE_BROWSER_XSS_FILTER = True
-X_FRAME_OPTIONS = 'DENY'
+X_FRAME_OPTIONS = 'DENY'          # protección contra clickjacking
+SECURE_CONTENT_TYPE_NOSNIFF = True

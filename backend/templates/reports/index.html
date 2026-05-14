@@ -1,16 +1,14 @@
 {% extends 'base.html' %}
 
-{% block title %}Reportes — Clínica Solaz{% endblock %}
+{% block title %}Reportes — Gestión Clínica{% endblock %}
 
 {% block content %}
 <div class="max-w-7xl mx-auto">
 
-    <!-- Cabecera -->
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold">Reportes</h1>
     </div>
 
-    <!-- Filtros -->
     <form method="get" class="card bg-base-100 shadow mb-6">
         <div class="card-body">
             <h2 class="font-semibold text-lg mb-4">Filtros</h2>
@@ -36,13 +34,17 @@
                     </select>
                 </div>
                 <div class="form-control justify-end">
-                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                    <div class="flex gap-2">
+                        <button type="submit" class="btn btn-primary">Aplicar Filtro</button>
+                        {% if date_from or date_to or selected_worker %}
+                            <a href="{% url 'reports:index' %}" class="btn btn-outline">Limpiar Filtro</a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
     </form>
 
-    <!-- Resumen numérico -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div class="card bg-base-100 shadow">
             <div class="card-body">
@@ -72,10 +74,8 @@
         </div>
     </div>
 
-    <!-- Gráficos -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
 
-        <!-- Ventas por mes -->
         <div class="card bg-base-100 shadow">
             <div class="card-body">
                 <h2 class="font-semibold text-lg mb-4">Ventas por mes</h2>
@@ -83,7 +83,6 @@
             </div>
         </div>
 
-        <!-- Ventas por fisioterapeuta -->
         <div class="card bg-base-100 shadow">
             <div class="card-body">
                 <h2 class="font-semibold text-lg mb-4">Ventas por fisioterapeuta</h2>
@@ -91,7 +90,6 @@
             </div>
         </div>
 
-        <!-- Ventas por tipo de tratamiento -->
         <div class="card bg-base-100 shadow md:col-span-2">
             <div class="card-body">
                 <h2 class="font-semibold text-lg mb-4">Ventas por tipo de tratamiento</h2>
@@ -119,20 +117,20 @@
     const monthData = {{ months_data|safe }};
 
     new Chart(document.getElementById('chartMonth'), {
-        type: 'bar',  // gráfico de barras
+        type: 'bar',
         data: {
             labels: monthLabels,
             datasets: [{
                 label: 'Total (€)',
                 data: monthData,
                 backgroundColor: primaryColor,
-                borderRadius: 4,  // bordes redondeados en las barras
+                borderRadius: 4,
             }]
         },
         options: {
             responsive: true,
             plugins: {
-                legend: { display: false }  // ocultamos la leyenda — el título ya es suficiente
+                legend: { display: false }  // el título de la sección ya describe los datos
             },
             scales: {
                 y: {

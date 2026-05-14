@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Venta {{ sale.date }} — Clínica Solaz{% endblock %}
+{% block title %}Venta {{ sale.date }} — Gestión Clínica{% endblock %}
 
 {% block content %}
 <div class="max-w-3xl mx-auto">
@@ -16,10 +16,17 @@
             </h1>
         </div>
         <div class="flex gap-2">
-            {% if sale.invoice_issued %}
-                <!-- Solo mostramos el botón si la factura está emitida -->
-                <a href="{% url 'sales:invoice_pdf' sale.pk %}" class="btn btn-outline btn-sm">
-                    📄 Descargar factura
+            {% if sale.invoice %}
+                <!-- La venta ya tiene factura — mostramos botones de gestión -->
+                <a href="{% url 'sales:invoice_detail' sale.pk %}"
+                   class="btn btn-outline btn-sm" style="color: #2596be; border-color: #2596be;">
+                    🧾 Ver factura
+                </a>
+            {% else %}
+                <!-- Sin factura — mostramos botón de crear -->
+                <a href="{% url 'sales:invoice_create' sale.pk %}"
+                   class="btn btn-outline btn-sm" style="color: #2596be; border-color: #2596be;">
+                    + Hacer factura
                 </a>
             {% endif %}
             <a href="{% url 'sales:edit' sale.pk %}" class="btn btn-primary btn-sm">
@@ -79,13 +86,12 @@
                 </div>
                 <div>
                     <p class="text-sm text-base-content/50">Trabajador</p>
-                    <!-- Círculo con el color del fisioterapeuta -->
                     <div class="flex items-center gap-2">
                         <div
                             class="w-4 h-4 rounded-full"
                             style="background-color: {{ sale.worker.color }}"
                         ></div>
-                        <p class="font-medium">{{ sale.worker.get_full_name }}</p>
+                        <p class="font-medium">{{ sale.worker.full_name }}</p>
                     </div>
                 </div>
                 <div>
@@ -94,14 +100,6 @@
                         <span class="badge badge-info">Sí — {{ sale.bonus.bonus_number }}</span>
                     {% else %}
                         <span class="badge badge-ghost">No</span>
-                    {% endif %}
-                </div>
-                <div>
-                    <p class="text-sm text-base-content/50">Pagado</p>
-                    {% if sale.is_paid %}
-                        <span class="badge badge-success">Sí</span>
-                    {% else %}
-                        <span class="badge badge-error">No</span>
                     {% endif %}
                 </div>
                 {% if sale.description %}

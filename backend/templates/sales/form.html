@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ title }} — Clínica Solaz{% endblock %}
+{% block title %}{{ title }} — Gestión Clínica{% endblock %}
 
 {% block content %}
 <div class="max-w-3xl mx-auto">
 
-    <!-- Cabecera -->
+    <!-- Cabecera con enlace para volver y título de la página -->
     <div class="mb-6">
         <a href="{% url 'sales:list' %}" class="text-sm link-primary mb-1 block">
             ← Volver a ventas
@@ -13,32 +13,26 @@
         <h1 class="text-2xl font-bold">{{ title }}</h1>
     </div>
 
-    <!-- Formulario -->
+    <!-- Tarjeta principal del formulario -->
     <div class="card bg-base-100 shadow">
         <div class="card-body">
 
+            <!-- method="post" envía los datos de forma segura -->
             <form method="post">
-                {% csrf_token %}
+                {% csrf_token %} <!-- Protección obligatoria contra ataques CSRF -->
 
-                <!-- Facturación -->
-                <h2 class="font-semibold text-lg mb-4">Facturación</h2>
-                <div class="form-control mb-6">
-                    <label class="label cursor-pointer justify-start gap-3">
-                        {{ form.invoice_issued }}
-                        <span class="label-text">Factura emitida (genera número automáticamente)</span>
-                    </label>
-                </div>
-
-                <div class="divider"></div>
-
-                <!-- Datos de la venta -->
                 <h2 class="font-semibold text-lg mb-4">Datos de la venta</h2>
 
+                <!-- Grid de 2 columnas en desktop, 1 en móvil -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+
+                    <!-- Campo fecha -->
                     <div class="form-control">
                         <label class="label"><span class="label-text">Fecha *</span></label>
                         {{ form.date }}
                     </div>
+
+                    <!-- Campo importe -->
                     <div class="form-control">
                         <label class="label"><span class="label-text">Importe (€) *</span></label>
                         {{ form.amount }}
@@ -46,99 +40,81 @@
                             <span class="text-error text-sm mt-1">{{ form.amount.errors.0 }}</span>
                         {% endif %}
                     </div>
+
+                    <!-- Select de paciente — ocupa las 2 columnas -->
+                    <!-- Al cambiar, HTMX llama a la URL de bonos y actualiza bonus-htmx-container -->
                     <div class="form-control col-span-2">
                         <label class="label"><span class="label-text">Paciente *</span></label>
-                        <!-- hx-get: cuando cambia este select, llama a la URL de bonos -->
-                        <!-- hx-target: reemplaza el contenido del div bonus-container -->
-                        <!-- hx-include: incluye el valor de este select en la petición -->
-                        <select
+
+                        <!-- Input visible de búsqueda -->
+                        <input
+                            type="text"
+                            id="patient-search"
+                            placeholder="Escribe el nombre del paciente..."
+                            class="input input-bordered w-full"
+                            autocomplete="off"
+                            hx-get="{% url 'sales:search_patients' %}"
+                            hx-trigger="keyup changed delay:300ms"
+                            hx-target="#patient-results"
+                            hx-include="#patient-search"
+                            name="q"
+                            value="{% if current_patient %}{{ current_patient.last_name }}, {{ current_patient.first_name }}{% endif %}"
+                        />
+
+                        <!-- Campo oculto con el ID del paciente seleccionado -->
+                        <input
+                            type="hidden"
+                            id="patient-id"
                             name="patient"
-                            id="id_patient"
-                            class="select select-bordered w-full"
-                            hx-get="{% url 'sales:patient_bonuses' %}"
-                            hx-trigger="change"
-                            hx-target="#bonus-container"
-                            hx-include="this"
-                            required
-                        >
-                            <option value="">---------</option>
-                            {% for patient in form.patient.field.queryset %}
-                                <option value="{{ patient.pk }}"
-                                    {% if form.patient.value == patient.pk|stringformat:"s" %}selected{% endif %}>
-                                    {{ patient }}
-                                </option>
-                            {% endfor %}
-                        </select>
+                            value="{% if current_patient %}{{ current_patient.pk }}{% endif %}"
+                        />
+
+                        <!-- Resultados de búsqueda HTMX -->
+                        <div id="patient-results"></div>
+
                         {% if form.patient.errors %}
                             <span class="text-error text-sm mt-1">{{ form.patient.errors.0 }}</span>
                         {% endif %}
                     </div>
+
+                    <!-- Campo método de pago -->
                     <div class="form-control">
                         <label class="label"><span class="label-text">Método de pago *</span></label>
                         {{ form.payment_method }}
                     </div>
+
+                    <!-- Campo trabajador -->
                     <div class="form-control">
                         <label class="label"><span class="label-text">Trabajador *</span></label>
                         {{ form.worker }}
                     </div>
+
+                    <!-- Campo tipo de tratamiento — ocupa las 2 columnas -->
                     <div class="form-control col-span-2">
                         <label class="label"><span class="label-text">Tipo de tratamiento *</span></label>
                         {{ form.treatment_type }}
                     </div>
+
                 </div>
 
                 <div class="divider"></div>
 
-                <!-- Bono -->
-                <h2 class="font-semibold text-lg mb-4">Bono</h2>
+                <!-- Contenedor donde HTMX inserta la sección de bono -->
+                <!-- Si el paciente tiene bonos activos, el partial la rellena -->
+                <!-- Si no tiene bonos, queda vacío y no se ve nada -->
+                <div id="bonus-htmx-container"></div>
 
-                <!-- Checkbox para indicar si es una venta de bono -->
-                <div class="form-control mb-4">
-                    <label class="label cursor-pointer justify-start gap-3">
-                        {{ form.is_bonus }}
-                        <span class="label-text">Esta venta es de bono</span>
-                    </label>
-                </div>
-
-                <!-- Desplegable de bonos actualizado por HTMX -->
-                <!-- hx-get: URL que HTMX llama cuando cambia el paciente -->
-                <!-- hx-trigger: se dispara cuando cambia el select de paciente -->
-                <!-- hx-target: el div donde HTMX inserta el resultado -->
-                <!-- hx-include: incluye el valor del select de paciente en la petición -->
-                <div class="form-control mb-4">
-                    <label class="label"><span class="label-text">Bono</span></label>
-                    <div
-                        id="bonus-container"
-                        hx-get="{% url 'sales:patient_bonuses' %}"
-                        hx-trigger="change from:#id_patient"
-                        hx-target="#bonus-container"
-                        hx-include="#id_patient"
-                    >
-                        <!-- Select inicial — se reemplaza cuando se selecciona un paciente -->
-                        <select name="bonus" class="select select-bordered w-full">
-                            <option value="">— Selecciona primero un paciente —</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="divider"></div>
-
-                <!-- Otros -->
+                <!-- Sección otros -->
                 <h2 class="font-semibold text-lg mb-4">Otros</h2>
                 <div class="form-control mb-4">
                     <label class="label"><span class="label-text">Descripción</span></label>
                     {{ form.description }}
                 </div>
-                <div class="form-control mb-6">
-                    <label class="label cursor-pointer justify-start gap-3">
-                        {{ form.is_paid }}
-                        <span class="label-text">Pagado</span>
-                    </label>
-                </div>
 
-                <!-- Botones -->
+                <!-- Botones de acción -->
                 <div class="flex gap-3">
                     <button type="submit" class="btn btn-primary">Guardar</button>
+                    <!-- Si estamos editando mostramos cancelar hacia el detalle, si no hacia la lista -->
                     {% if sale %}
                         <a href="{% url 'sales:detail' sale.pk %}" class="btn btn-outline">Cancelar</a>
                     {% else %}

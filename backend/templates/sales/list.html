@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Ventas — Clínica Solaz{% endblock %}
+{% block title %}Ventas — Gestión Clínica{% endblock %}
 
 {% block content %}
 <div class="max-w-7xl mx-auto">
@@ -37,15 +37,15 @@
             <div class="overflow-x-auto">
                 <table class="table table-zebra table-sm">
                     <thead>
-                        <tr>
+                        <tr class="bg-base-200 text-xs uppercase tracking-wider text-base-content/60 border-b-2 border-base-300">
                             <th>Fecha</th>
                             <th>Paciente</th>
                             <th>Importe</th>
                             <th>Tipo</th>
                             <th>Trabajador</th>
                             <th>Pago</th>
-                            <th>Factura</th>
-                            <th>Pagado</th>
+                            <th class="text-center">Factura</th>
+                            <th class="text-center">Enviada</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -62,7 +62,7 @@
                             <td>{{ sale.get_treatment_type_display }}</td>
                             <td>{{ sale.worker.first_name }}</td>
                             <td>{{ sale.get_payment_method_display }}</td>
-                            <td>
+                            <td class="text-center">
                                 {% if sale.invoice_issued %}
                                     <span class="text-sm">{{ sale.invoice_number }}</span>
                                 {% else %}
@@ -70,14 +70,23 @@
                                 {% endif %}
                             </td>
                             <td>
-                                {% if sale.is_paid %}
-                                    <span class="badge badge-success badge-sm">Sí</span>
+                                {% if sale.invoice and sale.invoice.last_sent_at %}
+                                    {# Factura enviada — check y fecha centrados juntos #}
+                                    <div class="flex items-center justify-center gap-1">
+                                        <span class="text-success">✅</span>
+                                        <span class="text-xs text-base-content/50">
+                                            {{ sale.invoice.last_sent_at|date:"d/m/Y" }}
+                                        </span>
+                                    </div>
                                 {% else %}
-                                    <span class="badge badge-error badge-sm">No</span>
+                                    {# Sin factura o no enviada #}
+                                    <div class="flex justify-center">
+                                        <span class="text-error">❌</span>
+                                    </div>
                                 {% endif %}
                             </td>
                             <td>
-                                <a href="{% url 'sales:detail' sale.pk %}" class="btn btn-ghost btn-xs">Ver</a>
+                                <a href="{% url 'sales:detail' sale.pk %}" class="btn btn-outline btn-xs" style="color: #2596be; border-color: #2596be;">Ver</a>
                             </td>
                         </tr>
                         {% empty %}
@@ -97,10 +106,88 @@
          </div>
     </div>
 
-    <!-- Contador -->
-    <p class="text-sm text-base-content/50 mt-3">
-        {{ sales|length }} venta{{ sales|length|pluralize }} encontrada{{ sales|length|pluralize }}
-    </p>
+    <!-- Paginación profesional -->
+    {% if page_obj.has_other_pages %}
+    <div class="flex flex-col items-center gap-3 py-5 px-4">
+
+        <!-- Controles de navegación -->
+        <div class="flex items-center gap-1 flex-wrap justify-center">
+
+            <!-- Primera página -->
+            {% if page_obj.has_previous %}
+                <a href="?page=1{% if query %}&q={{ query }}{% endif %}"
+                   class="btn btn-outline btn-sm" style="color: #2596be; border-color: #2596be;"
+                   title="Primera página">
+                    «
+                </a>
+                <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}"
+                   class="btn btn-outline btn-sm" style="color: #2596be; border-color: #2596be;">
+                    ‹ Anterior
+                </a>
+            {% else %}
+                <button class="btn btn-outline btn-sm btn-disabled">«</button>
+                <button class="btn btn-outline btn-sm btn-disabled">‹ Anterior</button>
+            {% endif %}
+
+            <!-- Separador si no estamos cerca del principio -->
+            {% if page_obj.number > 4 %}
+                <span class="btn btn-ghost btn-sm btn-disabled">…</span>
+            {% endif %}
+
+            <!-- Números de página — mostramos 2 antes y 2 después de la actual -->
+            {% for num in page_obj.paginator.page_range %}
+                {% if num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %}
+                    {% if page_obj.number == num %}
+                        <button class="btn btn-sm font-bold"
+                                style="background-color: #2596be; color: white; border-color: #2596be;">
+                            {{ num }}
+                        </button>
+                    {% else %}
+                        <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}"
+                           class="btn btn-outline btn-sm" style="color: #2596be; border-color: #2596be;">
+                            {{ num }}
+                        </a>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+
+            <!-- Separador si no estamos cerca del final -->
+            {% if page_obj.number < page_obj.paginator.num_pages|add:'-3' %}
+                <span class="btn btn-ghost btn-sm btn-disabled">…</span>
+            {% endif %}
+
+            <!-- Siguiente y última página -->
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}"
+                   class="btn btn-outline btn-sm" style="color: #2596be; border-color: #2596be;">
+                    Siguiente ›
+                </a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}"
+                   class="btn btn-outline btn-sm" style="color: #2596be; border-color: #2596be;"
+                   title="Última página">
+                    »
+                </a>
+            {% else %}
+                <button class="btn btn-outline btn-sm btn-disabled">Siguiente ›</button>
+                <button class="btn btn-outline btn-sm btn-disabled">»</button>
+            {% endif %}
+
+        </div>
+
+        <!-- Info de página y registros -->
+        <div class="text-sm text-base-content/50 text-center">
+            Página <span class="font-medium" style="color: #2596be;">{{ page_obj.number }}</span>
+            de <span class="font-medium">{{ page_obj.paginator.num_pages }}</span>
+            &nbsp;·&nbsp;
+            Mostrando {{ page_obj.start_index }} – {{ page_obj.end_index }}
+            de <span class="font-medium">{{ page_obj.paginator.count }}</span>
+            venta{{ page_obj.paginator.count|pluralize }}
+            {% if query %} para "<strong>{{ query }}</strong>"{% endif %}
+        </div>
+
+    </div>
+    {% endif %}
+
 
 </div>
 {% endblock %}

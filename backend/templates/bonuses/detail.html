@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ bonus.bonus_number }} — Clínica Solaz{% endblock %}
+{% block title %}{{ bonus.bonus_number }} — Gestión Clínica{% endblock %}
 
 {% block content %}
 <div class="max-w-3xl mx-auto">
@@ -46,6 +46,14 @@
                 <div>
                     <p class="text-sm text-base-content/50">Fecha de creación</p>
                     <p class="font-medium">{{ bonus.created_at|date:"d/m/Y" }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-base-content/50">Fecha de finalización</p>
+                    {% if not bonus.is_active %}
+                        <p class="font-medium">{{ bonus.sales.last.date|date:"d/m/Y"|default:"—" }}</p>
+                    {% else %}
+                        <p class="font-medium text-base-content/30">En curso</p>
+                    {% endif %}
                 </div>
             </div>
 
