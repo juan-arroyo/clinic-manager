@@ -7,7 +7,7 @@ import sys
 
 def main():
     # dev.py por defecto para desarrollo local.
-    # En producción, docker-compose.yml sobreescribe esto con config.settings.prod
+    # En producción, DJANGO_SETTINGS_MODULE en el .env lo sobreescribe con config.settings.prod
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.dev')
     try:
         from django.core.management import execute_from_command_line
