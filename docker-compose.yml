@@ -8,8 +8,6 @@ services:
       - .env
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
     networks:
       clinica_default:
         ipv4_address: 192.168.16.2   # IP fija para evitar problemas con iptables
