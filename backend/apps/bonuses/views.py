@@ -2,6 +2,7 @@
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from apps.users.views import staff_required
 from django.core.paginator import Paginator
 from apps.patients.models import Patient
 from .models import Bonus
@@ -45,7 +46,7 @@ def bonus_detail(request, pk):
     return render(request, 'bonuses/detail.html', {'bonus': bonus})
 
 
-@login_required
+@staff_required
 def bonus_create(request):
     if request.method == 'POST':
         form = BonusForm(request.POST)

@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from .models import Patient
 from .forms import PatientForm
+from apps.users.views import staff_required
 import unicodedata
 
 
@@ -47,7 +48,7 @@ def patient_detail(request, pk):
     return render(request, 'patients/detail.html', {'patient': patient})
 
 
-@login_required
+@staff_required
 def patient_create(request):
     if request.method == 'POST':
         form = PatientForm(request.POST)
@@ -63,7 +64,7 @@ def patient_create(request):
     })
 
 
-@login_required
+@staff_required
 def patient_edit(request, pk):
     patient = get_object_or_404(Patient, pk=pk)
 

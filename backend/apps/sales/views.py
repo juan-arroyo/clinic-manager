@@ -2,6 +2,7 @@
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from apps.users.views import staff_required
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.core.mail import EmailMessage
@@ -57,7 +58,7 @@ def sale_detail(request, pk):
     return render(request, 'sales/detail.html', {'sale': sale})
 
 
-@login_required
+@staff_required
 def sale_create(request):
     if request.method == 'POST':
         form = SaleForm(request.POST)
@@ -77,7 +78,7 @@ def sale_create(request):
     })
 
 
-@login_required
+@staff_required
 def sale_edit(request, pk):
     sale = get_object_or_404(Sale, pk=pk)
 
@@ -213,7 +214,7 @@ def generate_invoice_pdf(request, pk):
     return response
 
 
-@login_required
+@staff_required
 def invoice_create(request, pk):
     """
     Crea una factura para una venta.
@@ -257,7 +258,7 @@ def invoice_create(request, pk):
     })
 
 
-@login_required
+@staff_required
 def invoice_edit(request, pk):
     sale = get_object_or_404(Sale, pk=pk)
     invoice = get_object_or_404(Invoice, sale=sale)
@@ -285,7 +286,7 @@ def invoice_detail(request, pk):
     return render(request, 'sales/invoice_detail.html', {'sale': sale, 'invoice': invoice})
 
 
-@login_required
+@staff_required
 def invoice_send(request, pk):
     """
     Envía la factura por email con el PDF adjunto.

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Acceso denegado{% endblock %}
+
+{% block content %}
+<div class="flex flex-col items-center justify-center min-h-[60vh] text-center gap-4">
+    <h1 class="text-6xl font-bold text-primary">403</h1>
+    <p class="text-xl text-gray-600">No tienes permiso para acceder a esta página.</p>
+    <a href="/" class="btn btn-primary mt-4">Volver al inicio</a>
+</div>
+{% endblock %}

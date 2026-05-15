@@ -1,8 +1,10 @@
 # backend/apps/users/views.py
 
+from functools import wraps
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden
 from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Sum
@@ -10,6 +12,24 @@ from apps.sales.models import Sale
 from apps.patients.models import Patient
 from apps.bonuses.models import Bonus
 
+
+
+
+def staff_required(view_func):
+    """
+    Decorador para vistas de escritura — solo accesible por is_staff=True.
+    Redirige al login si no está autenticado, devuelve 403 si no es staff.
+    """
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('users:login')
+        if not request.user.is_staff:
+            return HttpResponseForbidden(
+                render(request, '403.html').content
+            )
+        return view_func(request, *args, **kwargs)
+    return wrapper
 
 def login_view(request):
     if request.user.is_authenticated:

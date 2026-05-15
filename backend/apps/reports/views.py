@@ -8,6 +8,7 @@ from django.db.models.functions import TruncMonth
 from django.utils import timezone
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment
+from apps.users.views import staff_required
 from apps.sales.models import Sale
 from apps.users.models import Physio
 
@@ -126,7 +127,7 @@ def apply_header_style(ws, headers):
         cell.alignment = header_alignment
 
 
-@login_required
+@staff_required
 def export_sales_excel(request):
     """Exporta las ventas filtradas a Excel."""
     sales = get_filtered_sales(request)
@@ -166,7 +167,7 @@ def export_sales_excel(request):
     return response
 
 
-@login_required
+@staff_required
 def export_invoices_excel(request):
     """Exporta solo las ventas con factura emitida a Excel."""
     sales = get_filtered_sales(request).filter(invoice_issued=True)
@@ -203,7 +204,7 @@ def export_invoices_excel(request):
     return response
 
 
-@login_required
+@staff_required
 def export_fisio_excel(request):
     """Exporta las ventas filtradas por fisioterapeuta a Excel."""
     sales = get_filtered_sales(request)
