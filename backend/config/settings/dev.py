@@ -14,6 +14,7 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '192.168.1.108']
 # (lección aprendida del proyecto anterior)
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost',
+    'http://localhost:8083',
     'http://127.0.0.1',
     'http://192.168.1.108',
     'http://192.168.1.108:8083',

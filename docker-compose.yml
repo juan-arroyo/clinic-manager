@@ -30,8 +30,6 @@ services:
       - ./media:/app/media
     depends_on:
       - db
-    environment:
-      - DJANGO_SETTINGS_MODULE=config.settings.prod
     # Secuencia de arranque: migraciones → estáticos → servidor
     # --workers 2: ajustado para Raspberry Pi 5 conviviendo con 25+ contenedores
     command: >

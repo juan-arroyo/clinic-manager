@@ -144,27 +144,10 @@ cp .env.example .env
 docker compose up -d
 ```
 
-After the containers are running, add `http://localhost:8083` to `CSRF_TRUSTED_ORIGINS` in `backend/config/settings/dev.py`:
-
-```python
-CSRF_TRUSTED_ORIGINS = [
-    'http://localhost',
-    'http://localhost:8083',   # required for local Docker + Nginx setup
-    'http://127.0.0.1',
-    ...
-]
-```
-
-Then restart the web container:
-
-```bash
-docker compose restart web
-```
-
 Create a superuser to log in:
 
 ```bash
-docker exec -it clinic-manager-web-1 python manage.py createsuperuser
+docker compose exec web python manage.py createsuperuser
 ```
 
 The app will be available at `http://localhost:8083`.
